@@ -1,0 +1,297 @@
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 12.5 (Ubuntu 12.5-0ubuntu0.20.04.1)
+-- Dumped by pg_dump version 12.5 (Ubuntu 12.5-0ubuntu0.20.04.1)
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+SET default_tablespace = '';
+
+SET default_table_access_method = heap;
+
+--
+-- Name: info_user; Type: TABLE; Schema: public; Owner: db_creator
+--
+
+CREATE TABLE public.info_user (
+    id integer NOT NULL,
+    name character varying(45),
+    b_date date,
+    b_place character varying(256)
+);
+
+
+ALTER TABLE public.info_user OWNER TO db_creator;
+
+--
+-- Name: info_user_id_seq; Type: SEQUENCE; Schema: public; Owner: db_creator
+--
+
+CREATE SEQUENCE public.info_user_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.info_user_id_seq OWNER TO db_creator;
+
+--
+-- Name: info_user_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: db_creator
+--
+
+ALTER SEQUENCE public.info_user_id_seq OWNED BY public.info_user.id;
+
+
+--
+-- Name: users; Type: TABLE; Schema: public; Owner: db_creator
+--
+
+CREATE TABLE public.users (
+    id integer NOT NULL,
+    login character varying(64),
+    password character varying(64)
+);
+
+
+ALTER TABLE public.users OWNER TO db_creator;
+
+--
+-- Name: users_id_seq; Type: SEQUENCE; Schema: public; Owner: db_creator
+--
+
+CREATE SEQUENCE public.users_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.users_id_seq OWNER TO db_creator;
+
+--
+-- Name: users_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: db_creator
+--
+
+ALTER SEQUENCE public.users_id_seq OWNED BY public.users.id;
+
+
+--
+-- Name: info_user id; Type: DEFAULT; Schema: public; Owner: db_creator
+--
+
+ALTER TABLE ONLY public.info_user ALTER COLUMN id SET DEFAULT nextval('public.info_user_id_seq'::regclass);
+
+
+--
+-- Name: users id; Type: DEFAULT; Schema: public; Owner: db_creator
+--
+
+ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_id_seq'::regclass);
+
+
+--
+-- Data for Name: info_user; Type: TABLE DATA; Schema: public; Owner: db_creator
+--
+
+COPY public.info_user (id, name, b_date, b_place) FROM stdin;
+1	Cristobal Conroy	1933-04-25	Dominica Enolachester 69010 Lubowitz Tunnel White Field Apt. 520
+2	Miss Selena Mertz	1988-12-27	Togo Cameronfurt 58517 Ellen Dale Felicita Point Suite 648
+3	Tanya Kreiger	1933-05-31	Seychelles North Dejonhaven 46430 Werner Hill Cartwright Plains Apt. 201
+4	Mr. Willis Tremblay	1969-01-06	Paraguay Treyberg 733 Raymond Green Mina Street Apt. 929
+5	Shayne Kub	1963-02-07	Russian Federation Lake Houston 786 Champlin Mountain Bradtke Flats Apt. 132
+6	Alvena Huels	1963-10-23	Qatar South Eldridge 6315 Corkery Prairie Arielle Crescent Suite 669
+7	Kathleen White	1975-10-05	Spain North Gregtown 62984 Paxton Union Flossie Run Apt. 412
+8	Roosevelt Schumm	1934-11-28	Saudi Arabia Vonfort 105 Eichmann Flats Bergnaum Crossroad Suite 135
+9	Micheal Bailey	1971-04-22	Barbados Shieldsland 232 Weber Junctions Timmothy Square Suite 008
+10	Susanna Lueilwitz V	1946-11-01	Sierra Leone Lake Alvena 794 Caterina Expressway Ismael Vista Apt. 691
+11	Cristobal Conroy	1933-04-25	Dominica Enolachester 69010 Lubowitz Tunnel White Field Apt. 520
+12	Miss Selena Mertz	1988-12-27	Togo Cameronfurt 58517 Ellen Dale Felicita Point Suite 648
+13	Tanya Kreiger	1933-05-31	Seychelles North Dejonhaven 46430 Werner Hill Cartwright Plains Apt. 201
+14	Mr. Willis Tremblay	1969-01-06	Paraguay Treyberg 733 Raymond Green Mina Street Apt. 929
+15	Shayne Kub	1963-02-07	Russian Federation Lake Houston 786 Champlin Mountain Bradtke Flats Apt. 132
+16	Alvena Huels	1963-10-23	Qatar South Eldridge 6315 Corkery Prairie Arielle Crescent Suite 669
+17	Kathleen White	1975-10-05	Spain North Gregtown 62984 Paxton Union Flossie Run Apt. 412
+18	Roosevelt Schumm	1934-11-28	Saudi Arabia Vonfort 105 Eichmann Flats Bergnaum Crossroad Suite 135
+19	Micheal Bailey	1971-04-22	Barbados Shieldsland 232 Weber Junctions Timmothy Square Suite 008
+20	Susanna Lueilwitz V	1946-11-01	Sierra Leone Lake Alvena 794 Caterina Expressway Ismael Vista Apt. 691
+21	Cristobal Conroy	1933-04-25	Dominica Enolachester 69010 Lubowitz Tunnel White Field Apt. 520
+22	Miss Selena Mertz	1988-12-27	Togo Cameronfurt 58517 Ellen Dale Felicita Point Suite 648
+23	Tanya Kreiger	1933-05-31	Seychelles North Dejonhaven 46430 Werner Hill Cartwright Plains Apt. 201
+24	Mr. Willis Tremblay	1969-01-06	Paraguay Treyberg 733 Raymond Green Mina Street Apt. 929
+25	Shayne Kub	1963-02-07	Russian Federation Lake Houston 786 Champlin Mountain Bradtke Flats Apt. 132
+26	Alvena Huels	1963-10-23	Qatar South Eldridge 6315 Corkery Prairie Arielle Crescent Suite 669
+27	Kathleen White	1975-10-05	Spain North Gregtown 62984 Paxton Union Flossie Run Apt. 412
+28	Roosevelt Schumm	1934-11-28	Saudi Arabia Vonfort 105 Eichmann Flats Bergnaum Crossroad Suite 135
+29	Micheal Bailey	1971-04-22	Barbados Shieldsland 232 Weber Junctions Timmothy Square Suite 008
+30	Susanna Lueilwitz V	1946-11-01	Sierra Leone Lake Alvena 794 Caterina Expressway Ismael Vista Apt. 691
+\.
+
+
+--
+-- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: db_creator
+--
+
+COPY public.users (id, login, password) FROM stdin;
+1	Ludie_Steuber57@hotmail.com	DlSYy1fOrS6kPs4
+2	Hector.Lueilwitz@gmail.com	0veVxd3RsTvg5oZ
+3	Rebeca.Kshlerin78@yahoo.com	qrIZWvrtMLSMGSe
+4	Connie86@gmail.com	LY05seKdJUXzJns
+5	Itzel.Dietrich@hotmail.com	CwGIN4WjHYEfLhg
+6	Van91@hotmail.com	rzVEaE0kCIkEN28
+7	Haylie39@yahoo.com	vKPgqMzgfIIHn3A
+8	Vivien.Towne11@yahoo.com	XAu9UwBIeZIk74h
+9	Waldo.Lindgren31@yahoo.com	K87CcAx4I9idvQZ
+10	Clare24@gmail.com	gm6DwEBZvVqJd7h
+11	Orval39@gmail.com	xiFqG2YXAXYYrws
+12	Dena_Bins@hotmail.com	NNOmBM6CHQoT4Ch
+13	Christopher_Gottlieb@hotmail.com	ovFrsd0QItrql1W
+14	Nicolette45@gmail.com	DYvve2Ut1BkblEz
+15	Kyleigh85@hotmail.com	ZEejPGRpU3Ri34h
+16	Leonie.Bayer1@yahoo.com	mh6QJhxvGgzI9Jm
+17	Sabryna81@yahoo.com	P4LPP4o2syWZQmZ
+18	Jonas_Halvorson51@yahoo.com	KqXJnknBE27iO78
+19	Lesly0@hotmail.com	9qzJMfV9JXbWKzh
+20	Alford.Pouros89@hotmail.com	VflDVVmTx0L3DX3
+21	Katlyn.Schmidt60@gmail.com	XsRiJpLjQe7JQiH
+22	Catharine_Ratke71@gmail.com	ClLhqrQBxPYTAWM
+23	Gavin26@gmail.com	uHkVWSw48omyRsz
+24	Keagan19@hotmail.com	wkeTL6bgiJdPhvo
+25	Freda99@gmail.com	dfBU_4MWE0kDpl3
+26	Audie_Gottlieb@hotmail.com	Ty7m_2MXXB9GsVz
+27	Judge97@yahoo.com	YazW0rXoEiDigxi
+28	Amir8@hotmail.com	uQ8nY8dmI9O6HnJ
+29	Mohammed_Volkman@gmail.com	XtQXyizT1F1UlRZ
+30	Torrance_Smith@yahoo.com	paClu3A3pbaXszs
+31	Sunny_Schaefer77@hotmail.com	z7LgR2TmKWJlzMY
+32	George61@yahoo.com	BFYQP15fBc11HC9
+33	Roman16@yahoo.com	hHQYSEkbYAsxjvG
+34	Khalid.Schinner9@hotmail.com	WrpAAnH94YS36iH
+35	Sharon_Johns@hotmail.com	e1D71Hx2DUkoexg
+36	Mossie_Pacocha1@gmail.com	wIB31VldEiFMYLn
+37	Maegan_Denesik@yahoo.com	JBdS9BvzXGe1hzr
+38	Lula.Ward@hotmail.com	T_Z6YsPOMcFfGhq
+39	Ara_Bauch26@hotmail.com	TYrdpuGONODmugF
+40	Avery_Schimmel@yahoo.com	_zvfEaWYLQ8QqqN
+41	Modesta.Quitzon@yahoo.com	knEE1V5VxIgOPuK
+42	Erling.Rau@hotmail.com	VCgeoC0AsAgmCUV
+43	Gregory34@hotmail.com	wW4pFbKvPlOOpwl
+44	Tina28@gmail.com	ES_5foAFFY9YGfJ
+45	Tre75@gmail.com	eBn7yqdCZDNIKgt
+46	Ellen.Kuhlman78@hotmail.com	KSDAKIMAlEauyw_
+47	Enrique.Koch@gmail.com	XAS7z9mLnVO1erA
+48	Amira44@yahoo.com	HDcKmVgdaWZx5mJ
+49	Glenna52@gmail.com	ek7KC7fGKyPPjib
+50	Shayne_Fritsch76@yahoo.com	5gqKnPcgAr7SwwR
+51	Sandra9@hotmail.com	TLnAXncdr7FQJub
+52	Santos.Wolff59@yahoo.com	Ekmbkz8K1qO0he3
+53	Brandy.Moore@gmail.com	7N3CeMU6Uat8t6a
+54	Faustino_Mills94@gmail.com	sZNIGaNlk406AEv
+55	Jovany.Zboncak@yahoo.com	anksHNZPYD1CgO4
+56	Sophie.Simonis@gmail.com	2dPXR_gPYvaXz6v
+57	Alexandro_Wiegand66@yahoo.com	Omgqxj2Riw2wMKP
+58	Fletcher.Farrell87@hotmail.com	lu6k09ozmNClxON
+59	Kennedi82@yahoo.com	XRFNHVCi4Puq7x3
+60	Reba_Dach4@yahoo.com	IWUAm_FmgC9o5_D
+61	Rubye28@gmail.com	Xdh6sW0zj5tM6hs
+62	Modesto.Luettgen@gmail.com	3yRLqnptQbyh2C_
+63	Richard11@gmail.com	hXo816hDdTOUQmv
+64	Fritz.Kozey46@hotmail.com	FVTsvLHqzCm7ks7
+65	Darby64@gmail.com	8cWpo_c8XEfePoJ
+66	Nelle30@hotmail.com	BTX_SZz9l3vNxO5
+67	Tia65@gmail.com	9gnB5ZSwehO9U08
+68	Lazaro46@gmail.com	JpuriWl46Egh4pu
+69	Blaise.Harber@hotmail.com	P7IJ_yy2qv2tGJ1
+70	Jaylen_Schaefer55@gmail.com	irRJzwxvm0hhVvO
+71	Darby_Gibson1@gmail.com	PgP0noOZiqbGB2h
+72	Lyda57@yahoo.com	TMxemehQBBW2SBE
+73	Creola54@hotmail.com	h9iHSz0pqMavmlX
+74	Geovanni.Pouros91@gmail.com	b1_sxd_pt1TRf3U
+75	Delpha.Schuster@yahoo.com	nAIVLLIXmDa4QHq
+76	Dedrick_Marquardt@yahoo.com	V7fqumOi_CUknyh
+77	Kassandra_Ullrich54@hotmail.com	Hlv5JF1Q4RA8ioO
+78	Flavio76@hotmail.com	tviSvrTVzdyaIuB
+79	Mariam_Schuppe0@hotmail.com	_HQJ_R9VYYbNQXM
+80	Ozella57@hotmail.com	wa25pySyM0E9A64
+81	Jacinto_Borer@yahoo.com	6nIKSsZyKDtOydl
+82	Agustina37@yahoo.com	_91CLpZtESiMb2N
+83	April95@hotmail.com	zGEGtePoaBaG_Vg
+84	Duncan_Renner55@yahoo.com	tyANj_ZbsVWk099
+85	Cyril.Greenholt@yahoo.com	pDQ4U3I7PQjawUP
+86	Foster.VonRueden14@hotmail.com	RY3EOOeHulj_UAC
+87	Kitty60@gmail.com	NHY80oncKwiLRkc
+88	Cecile74@hotmail.com	M2axxSVw4yq8SAn
+89	Dee63@yahoo.com	_r1LBtOhNrtjAEv
+90	Lillian.OReilly51@yahoo.com	fcnVASde_r8hg1P
+91	Elias_Monahan19@yahoo.com	6cQ_RrnBigBpPxi
+92	Lina.Kulas@yahoo.com	JiMAktaM_Z4lFTG
+93	Myriam.Crona@hotmail.com	HtMNKiVBj7iZcDN
+94	Mekhi_Stanton32@gmail.com	_BjxXCxxMLH1IxD
+95	Demetris.Herzog@gmail.com	sOv6V_pdjNCBpD2
+96	Sven_Goodwin@gmail.com	xpuPvBxSfk7mHwW
+97	Forrest_Ankunding93@hotmail.com	__bSe2IKs7I6fwK
+98	Arnulfo.Schmeler@hotmail.com	COnbcREHIEmiE8H
+99	Elena5@yahoo.com	_NNcbu0mQTDJ9F_
+100	Grant30@hotmail.com	NlbJ_hxdST_q8ek
+101	Dimitri_McClure@yahoo.com	rf9LfA5Mb3SrUYv
+102	Hollis_Crist@yahoo.com	QkBRWct1rux9vFd
+103	Michelle.West43@hotmail.com	rxX7BHFCTsDYBhJ
+104	Stefanie.Cronin33@gmail.com	NRNf4B7n9zOAw2a
+105	Doris_McKenzie@gmail.com	cvbxYxA1ToPaQFI
+106	Saul_Dach@hotmail.com	zgDlSVW9M8aDOoV
+107	Ernestina.Cummerata@gmail.com	M4hI_R8VFv2OZzN
+108	Gavin_Wuckert77@gmail.com	47IIKTVQku9zdZf
+109	Darien_Schaefer32@yahoo.com	0yK1I1jfVSpaRXx
+110	Ervin.Bernhard11@gmail.com	oMb9az0IUTCjBrH
+\.
+
+
+--
+-- Name: info_user_id_seq; Type: SEQUENCE SET; Schema: public; Owner: db_creator
+--
+
+SELECT pg_catalog.setval('public.info_user_id_seq', 30, true);
+
+
+--
+-- Name: users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: db_creator
+--
+
+SELECT pg_catalog.setval('public.users_id_seq', 110, true);
+
+
+--
+-- Name: info_user info_user_pkey; Type: CONSTRAINT; Schema: public; Owner: db_creator
+--
+
+ALTER TABLE ONLY public.info_user
+    ADD CONSTRAINT info_user_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: db_creator
+--
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT users_pkey PRIMARY KEY (id);
+
+
+--
+-- PostgreSQL database dump complete
+--
+
