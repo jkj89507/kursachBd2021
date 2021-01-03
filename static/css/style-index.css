@@ -1,0 +1,142 @@
+body
+{
+	background-color: #DDDDDD;
+}
+
+h2
+{
+	font-size: 1.9rem;
+}
+
+.logo
+{
+	margin-top: -2%;
+	height: auto;
+}
+
+.workpanel
+{
+	margin-top: 2%;
+	margin-left: -1%;
+	padding: 2px;
+	opacity: 90%;
+	height: auto;
+}
+
+.button-link
+{
+	margin: 1%;
+	background-color: #C1C1C1;
+	color: #232323;
+	border-radius: 0px 0px 5px 5px;
+	border: 0px;
+	border-top: 3px solid #C40901;
+} 
+
+.bt-about, .bt-service
+{
+	border: none;
+	background-color: #C1C1C1;
+	color: #232323;
+	font-size: 2.5vh;
+	border: none;
+	padding: 1vh;
+}
+
+.button-link>form>button:hover
+{
+	background-color: #ABABAB;
+}
+
+.info
+{
+	margin-top: -4%;
+}
+
+
+.menu, .content
+{
+	height: auto;
+	background-color: #C1C1C1;
+	border-right: 3px solid #C40901;
+	border-radius: 3px;
+}
+
+.content
+{
+	height: 60vh;
+	overflow-y: scroll;
+}
+
+.card-service
+{
+	height: auto;
+	background-color: #ABABAB;
+	margin: 1% 1% 1% 0;
+	overflow-x: hidden;
+	text-align: center;
+}
+
+.card-service:hover
+{
+	background-color: #F1393E;
+	color: white;
+}
+
+.card-service>h3
+{
+	font-size: 1.8rem;
+}
+
+.card-service>img
+{
+	width: 100%;
+	height: auto;
+}
+
+.menu
+{
+	margin-left: 4%;
+}
+
+.user-info
+{
+	margin-top: 8%;
+	font-size: 1.7vh;
+}
+
+.footer
+{
+	margin-top: 4%;
+	background-color: #101010;
+	height: 15vw;
+}
+
+@media only screen and (max-width: 1200px)
+{
+	.logo
+	{
+		display: none;
+	}
+	.workpanel
+	{
+		width: 90%;
+		margin-left: 1%;
+	}
+
+	.info
+	{
+		margin-top: 1%;
+	}
+
+	.menu, .content
+	{
+		margin-top: 1%;
+	}
+
+	.content
+	{
+		margin-left: 4%;
+	}
+	
+}

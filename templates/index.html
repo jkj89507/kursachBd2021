@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>GoFast|Official</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/reset.css')}}">
+		<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='bootstrap/css/bootstrap.min.css')}}">
+		<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style-index.css')}}">
+		<link rel="preconnect" href="https://fonts.gstatic.com">
+		<link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow&display=swap" rel="stylesheet">
+	</head>
+
+	<body>
+		<div class="row justify-content-center col-md-12">
+			<img class="logo col-md-2 col-md-offset-1 col-xs-2" src="{{ url_for('static', filename='images/logo.png')}}">
+
+			<div class="workpanel row col-md-9 col-xs-10">
+				<div class="button-link row col-md-10 col-xs-12">
+					<form method="post" action="http://127.0.0.1:5000/about" class="col-md-1">
+						<button class="bt-about" type="submit">About</button>
+					</form>
+					<form method="post" action="http://127.0.0.1:5000/service" class="col-md-1 col-md-offset-1">
+						<button class="bt-service" type="submit">Service</button>
+					</form>
+					<form method="post" action="http://127.0.0.1:5000/account" class="col-md-1 col-md-offset-1">
+						<button class="bt-service" type="submit">Account</button>
+					</form>
+				</div>
+			</div>
+		</div>
+		<div class="info row col-md-12 col-xs-12">
+			<div class="content justify-content-center col-md-6 col-md-offset-1 col-xs-11">
+				{% block content %}{% endblock %}
+			</div>
+
+			<div class="menu col-md-3 col-xs-11">
+				<img class="col-md-6 col-md-offset-3 col-xs-4 col-xs-offset-4" src="{{ url_for('static', filename='images/avatar.png')}}">
+				<div class="user-info col-md-10 col-md-offset-1 col-xs-4 col-xs-offset-4">
+					<p>Name: {{name}}</p>
+					<p>E-mail: {{login}}</p>
+					<p>Birthday: {{b_date}}</p>
+					<p>Native city: {{b_place}}</p>
+				</div>
+			</div>
+		</div>
+
+		<div class="footer col-md-12 col-xs-12">
+			
+		</div>
+	</body>
+</html>
