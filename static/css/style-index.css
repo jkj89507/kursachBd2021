@@ -102,9 +102,52 @@ h2
 .user-info
 {
 	margin-top: 8%;
+	font-size: 1.6vh;
+}
+
+.user-info>p
+{
+	margin-left: -20%;
+}
+
+.login>h2, .password>h2
+{	
+	margin-top: 5%;
+	font-size: 1.7vh;
+	margin-left: 5%;
+}
+
+.login>label>h2, .password>label>h2
+{
+	font-size: 1.7vh;
+}
+.fname-ans
+{
+	margin-left: 1%;
+}
+
+.mounth, .day, .year
+{
+	margin-top: 3%;
+}
+
+.mounth>option>h2, .day>option>h2, .year>option>h2
+{
+	font-size: 1.6vh;
+}
+
+.login>input, .password>input
+{
+	margin-top: 3.8%;
+	margin-left: -3%;
 	font-size: 1.7vh;
 }
 
+.btn>.bt
+{
+	width: 100%;
+	font-size: 1.8vh;
+}
 .footer
 {
 	margin-top: 4%;
