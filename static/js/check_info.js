@@ -13,18 +13,41 @@ function nonStandart(string, chkstr){
 }
 
 
-function checkRight(read, ans) {
+function checkRight(read, ans, val1, val2, val3, val4) {
 	var help = document.getElementById(read).value;
 	var answer = document.getElementById(ans);
-	if (nonStandart(help, "!/.,#$1234567890") == true){
+	if (nonStandart(help, "!/,#$") == true && help != null){
 		answer.style.color = "green";
-		answer.innerHTML = "OK!";
-		document.getElementById("bt").disabled = false; 
+		answer.innerHTML = "OK!"; 
 	}
 	else {
 		answer.style.color = "red";
 		answer.innerHTML = "X";
-		document.getElementById("bt").disabled = true; 
 	}
+	for (var i_counter=1; i_counter <= 4; i_counter++){
+		if (document.getElementById("val"+i_counter.toString()).innerHTML != "OK!"){
+			document.getElementById("bt").disabled = true;
+		} 
+	}
+	document.getElementById("bt").disabled = false;
 }
 
+function checkPass(read, orig, ans, val1, val2, val3, val4){
+	var original = document.getElementById(orig).value;
+	var help = document.getElementById(read).value;
+	var answer = document.getElementById(ans);
+	if (help == original && help != "" && help != null) {
+		answer.style.color = "green";
+		answer.innerHTML = "OK!";
+	}
+	else {
+		answer.style.color = "red";
+		answer.innerHTML = "X"; 
+	}
+	for (var i_counter=1; i_counter <= 4; i_counter++){
+		if (document.getElementById("val"+i_counter.toString()).innerHTML != "OK!"){
+			document.getElementById("bt").disabled = true;
+		} 
+	}
+	document.getElementById("bt").disabled = false;
+}

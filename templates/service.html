@@ -2,7 +2,7 @@
 {% block content %}
 	{{ super() }}
 	{% for item in dict %}
-		<div class="card-service justify-content-center col-md-3 col-xs-3">	
+		<div class="card-service justify-content-center col-md-3 col-xs-3" title="{{item.name}}">	
 			<img src="{{ url_for('static', filename='images/usl-service.png')}}">
 			<h3>{{item.name}}</h3>
 			<h3>-{{item.cost}} $</h3>

@@ -81,16 +81,20 @@ h2
 {
 	background-color: #F1393E;
 	color: white;
+	cursor: pointer;
 }
 
 .card-service>h3
 {
-	font-size: 1.8rem;
+	white-space: nowrap;
+	overflow: hidden;
+	font-size: 1.4rem;
+	text-overflow: ellipsis;
 }
 
 .card-service>img
 {
-	width: 100%;
+	width: 90%;
 	height: auto;
 }
 

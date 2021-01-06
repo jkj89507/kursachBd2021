@@ -1,16 +1,16 @@
 {% extends "index.html" %}
 {% block content %}
 	{{ super() }}
-	<form method="post" action="http://127.0.0.1:5000">
+	<form method="post" action="http://127.0.0.1:5000/change">
 		<div class="login col-md-12 col-xs-12">
 			<h2 class="col-md-4 col-xs-5">Name:</h2>
-			<input id="fname" class="col-md-5 col-xs-5" type="text" name="name" placeholder="Ivan" value="{{ name }}" onchange="checkRight('fname','fname-ans')">
+			<input id="fname" class="col-md-5 col-xs-5" type="text" name="name" placeholder="Ivan" value="{{ name }}" onchange="checkRight('fname','fname-ans', 'fname-ans', 'login-ans', 'ncity-ans', 'repassword-ans')">
 			<h2 id="fname-ans" class="col-md-1"></h2>
 		</div>
 
 		<div class="login col-md-12 col-xs-12">
 			<h2 class="col-md-4 col-xs-5">E-mail:</h2>
-			<input id="login" class="col-md-5 col-xs-5" type="text" name="login" placeholder="inbox@inbox.su" value="{{ login }}" onchange="checkRight('login','login-ans')">
+			<input id="login" class="col-md-5 col-xs-5" type="text" name="login" placeholder="inbox@inbox.su" value="{{ login }}" onchange="checkRight('login','login-ans', 'fname-ans', 'login-ans', 'ncity-ans', 'repassword-ans')">
 			<h2 id="login-ans" class="col-md-1"></h2>
 		</div>
 
@@ -20,39 +20,40 @@
 			<label><h2>M:</h2></label>
 			<select class="mounth" name="mounth" size="1">
 				{% for i in range(1,13)%}
-			    	<option value="{i}"><h2>{{ i }}</h2></option>
+			    	<option value="{{ i }}"><h2>{{ i }}</h2></option>
 			    {% endfor %}
 		  	</select>
 
 		  	<label><h2>D:</h2></label>
 			<select class="day" name="day" size="1">
 				{% for i in range(1,32)%}
-			    	<option value="{i}"><h2>{{ i }}</h2></option>
+			    	<option value="{{ i }}"><h2>{{ i }}</h2></option>
 			    {% endfor %}
 		  	</select>
 
 		  	<label><h2>Y:</h2></label>
 			<select class="year" name="year" size="1">
 				{% for i in range(1930,2002+1)%}
-			    	<option value="{i}"><h2>{{ i }}</h2></option>
+			    	<option value="{{ i }}"><h2>{{ i }}</h2></option>
 			    {% endfor %}
 		  	</select>
 		</div>
 
 		<div class="login col-md-12 col-xs-12">
 			<h2 class="col-md-4 col-xs-5">Native city:</h2>
-			<input id="ncity" class="col-md-5 col-xs-5" type="text" name="ncity" value="{{ b_place }}" onchange="checkRight('ncity','ncity-ans')">
+			<input id="ncity" class="col-md-5 col-xs-5" type="text" name="ncity" value="{{ b_place }}" onchange="checkRight('ncity','ncity-ans', 'fname-ans', 'login-ans', 'ncity-ans', 'repassword-ans')">
 			<h2 id="ncity-ans" class="col-md-1"></h2>
 		</div>
 
 		<div class="password col-md-12 col-xs-12">
 			<h2 class="col-md-4 col-xs-5">Password:</h2>
-			<input id="password" class="col-md-5 col-xs-5" type="password" name="pass">
+			<input id="password" class="col-md-5 col-xs-5" type="password" name="pass" value="{{password}}">
 		</div>
 
 		<div class="password col-md-12 col-xs-12">
 			<h2 class="col-md-4 col-xs-5">Re-password:</h2>
-			<input id="repassword" class="col-md-5 col-xs-5" type="password" name="repass">
+			<input id="repassword" class="col-md-5 col-xs-5" type="password" name="repass" onchange="checkPass('repassword', 'password', 'repassword-ans', 'fname-ans', 'login-ans', 'ncity-ans', 'repassword-ans')", value="{{password}}">
+			<h2 id="repassword-ans" class="col-md-1"></h2>
 		</div>
 
 		<div class="btn col-md-3 col-md-offset-9 col-xs-4 col-xs-offset-7">
