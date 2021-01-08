@@ -16,6 +16,30 @@ SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
 
+--
+-- Name: check_update_curr_service(); Type: FUNCTION; Schema: public; Owner: db_creator
+--
+
+CREATE FUNCTION public.check_update_curr_service() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+CREATE TABLE IF NOT EXISTS curr_service
+(
+id_user integer REFERENCES data_login (id_user) ON DELETE CASCADE on UPDATE CASCADE,
+curr_service VARCHAR(45),
+curr_time VARCHAR(30),
+status BOOLEAN
+);
+INSERT INTO curr_service (id_user, status)
+VALUES (OLD.id_user, FALSE);
+RETURN NULL;
+END;
+$$;
+
+
+ALTER FUNCTION public.check_update_curr_service() OWNER TO db_creator;
+
 SET default_tablespace = '';
 
 SET default_table_access_method = heap;
@@ -68,6 +92,20 @@ ALTER TABLE public.callback_id_call_seq OWNER TO db_creator;
 
 ALTER SEQUENCE public.callback_id_call_seq OWNED BY public.callback.id_call;
 
+
+--
+-- Name: curr_service; Type: TABLE; Schema: public; Owner: db_creator
+--
+
+CREATE TABLE public.curr_service (
+    id_user integer,
+    curr_service character varying(45),
+    curr_time character varying(30),
+    status boolean
+);
+
+
+ALTER TABLE public.curr_service OWNER TO db_creator;
 
 --
 -- Name: data_login; Type: TABLE; Schema: public; Owner: db_creator
@@ -235,16 +273,16 @@ ALTER TABLE ONLY public.service ALTER COLUMN id_service SET DEFAULT nextval('pub
 --
 
 COPY public.bank_info (id_user, card_number, amount) FROM stdin;
-1	5936-4683-3586-4903	756
-2	2388-7329-8436-8503	543
-3	8412-0694-6147-8784	719
-4	9475-1582-1745-2025	46
-5	4366-9189-0650-3371	335
-6	5914-8818-6107-4327	155
-7	9375-8082-2287-2035	166
-8	5762-8617-1068-7463	494
-9	8491-7605-6703-3309	341
-10	6352-8052-9633-6015	10
+7	9375-8082-2287-2035	4006
+1	5936-4683-3586-4903	1000
+3	8412-0694-6147-8784	319
+5	4366-9189-0650-3371	3259
+9	8491-7605-6703-3309	781
+6	5914-8818-6107-4327	2223
+10	6352-8052-9633-6015	2914
+2	2388-7329-8436-8503	3657
+4	9475-1582-1745-2025	3180
+8	5762-8617-1068-7463	2198
 \.
 
 
@@ -257,20 +295,33 @@ COPY public.callback (id_call, phone, date) FROM stdin;
 
 
 --
+-- Data for Name: curr_service; Type: TABLE DATA; Schema: public; Owner: db_creator
+--
+
+COPY public.curr_service (id_user, curr_service, curr_time, status) FROM stdin;
+2	\N	\N	f
+4	Changing the oil in the i	Fri Jan 08 2021 05:55:57	f
+4	Changing the oil in the i	Fri Jan 08 2021 05:55:57	f
+8	Replacing the oil filter	Fri Jan 08 2021 05:58:31	f
+8	Replacing the oil filter	Fri Jan 08 2021 05:58:31	f
+\.
+
+
+--
 -- Data for Name: data_login; Type: TABLE DATA; Schema: public; Owner: db_creator
 --
 
 COPY public.data_login (email, password, id_user) FROM stdin;
-Marlen30@gmail.com	EqFj1wn356Si5MJ	1
-Tanner10@hotmail.com	PeeB3vkGFqt1e9X	2
 Jordyn50@gmail.com	ZllCNCCl5uJ_Xwg	3
 Janet.Wiegand39@hotmail.com	vAtLRrkVB1BkZGw	4
-Deontae78@gmail.com	GZ3ziNlcifEdylN	5
 Lynn.Bauch@hotmail.com	ReAiXYcdvXb7STi	6
 Rylan.Franecki89@yahoo.com	2N4_PqWAq4Iy14b	7
 Edmund30@gmail.com	97QvHQSUznoDGMs	8
 Justen81@yahoo.com	2G6az_l6nA2Gpb9	9
 Raven75@hotmail.com	aDmhM5TCzJtvm1B	10
+Marlen32@gmail.com	sdfsdFrgreget43	1
+Deoste89@mail.com	dsvsdv3456	5
+Tanner11@mailhot.com	PeeB3vkGFqt1e9X	2
 \.
 
 
@@ -279,16 +330,16 @@ Raven75@hotmail.com	aDmhM5TCzJtvm1B	10
 --
 
 COPY public.info_user (id_user, name, home_place, b_date) FROM stdin;
-1	Aaliyah Anderson	Saint Kitts and Nevis Vincenzaton 18941 Ellen Heights Kaya Plain Apt. 607	Fri Sep 14 1934 21:04:37 
-2	Aaliyah Beier	Ireland West Patiencebury 3241 Kertzmann Crossroad Jewell Shores Apt. 925	Tue Dec 31 1935 04:05:16 
 3	Aaliyah Botsford	Libyan Arab Jamahiriya New Waylontown 59315 Bartoletti Islands Gaylord Cliff Apt. 201	Mon Mar 09 1970 11:41:44 
 4	Aaliyah Brakus	Saudi Arabia South Margie 66523 Robel Trace Stracke Expressway Suite 909	Mon Jul 05 1937 05:04:22 
-5	Aaliyah Corwin	French Guiana Deonbury 48643 Thad Port Ariane Rapid Apt. 577	Mon May 03 1982 02:52:55 
 6	Aaliyah Dietrich	Turkmenistan Port Cristian 1948 Zboncak Point Grimes Drive Suite 518	Wed Apr 19 1967 14:24:36 
 7	Aaliyah Doyle	Greenland East Violabury 24825 Blanda Gateway Hulda Grove Suite 986	Tue Jun 26 1956 11:38:49 
 8	Aaliyah Gibson	Costa Rica Leannafurt 1328 Preston Causeway Langosh Via Suite 123	Tue Oct 10 1995 19:29:10 
 9	Aaliyah Gislason	Saint Vincent and the Grenadines Jameltown 17908 Guido Groves Demarco Stream Suite 815	Mon Dec 08 1958 05:45:42 
 10	Aaliyah Glover	Tokelau Violabury 995 Jocelyn Summit Lesch Islands Suite 620	Sun Feb 13 1949 20:42:29 
+1	Banan Ananas	Saint Kitts and Nevis Vincenzaton 18941 Ellen Heights Kaya Plain Apt. 607	Mon Jun 1 1958 21:04:37
+5	Aliah Barowin	French Guiana Paris Apakra street 5b	Mon Jan 1 1930 21:04:37
+2	Aaliyah Veiber	Ireland West Patiencebury 3241 Kertzmann Crossroad Jewell Shores Apt. 925	Mon Jun 15 1977 21:04:37
 \.
 
 
@@ -297,16 +348,16 @@ COPY public.info_user (id_user, name, home_place, b_date) FROM stdin;
 --
 
 COPY public.info_work (name, phone, work_place) FROM stdin;
-Aaliyah Anderson	1-430-166-8115	Jast LLC
-Aaliyah Beier	635.613.4207 x5421	Moen and Sons
 Aaliyah Botsford	109.871.6464 x7498	Pfannerstill - Watsica
 Aaliyah Brakus	699-162-6413 x6702	Welch
-Aaliyah Corwin	427.182.1660	Trantow
 Aaliyah Dietrich	317-698-4916 x2735	Zboncak
 Aaliyah Doyle	1-812-092-7813 x7775	Wunsch
 Aaliyah Gibson	836-117-6756	Abshire - Reilly
 Aaliyah Gislason	254-716-1755 x5687	Sauer Group
 Aaliyah Glover	(547) 511-9002	Schneider
+Banan Ananas	1-430-166-8115	Jast LLC
+Aliah Barowin	427.182.1660	Trantow
+Aaliyah Veiber	635.613.4207 x5421	Moen and Sons
 \.
 
 
@@ -427,11 +478,26 @@ ALTER TABLE ONLY public.service
 
 
 --
+-- Name: bank_info cucs_tg; Type: TRIGGER; Schema: public; Owner: db_creator
+--
+
+CREATE TRIGGER cucs_tg AFTER UPDATE ON public.bank_info FOR EACH ROW EXECUTE FUNCTION public.check_update_curr_service();
+
+
+--
 -- Name: bank_info bank_info_id_user_fkey; Type: FK CONSTRAINT; Schema: public; Owner: db_creator
 --
 
 ALTER TABLE ONLY public.bank_info
     ADD CONSTRAINT bank_info_id_user_fkey FOREIGN KEY (id_user) REFERENCES public.data_login(id_user);
+
+
+--
+-- Name: curr_service curr_service_id_user_fkey; Type: FK CONSTRAINT; Schema: public; Owner: db_creator
+--
+
+ALTER TABLE ONLY public.curr_service
+    ADD CONSTRAINT curr_service_id_user_fkey FOREIGN KEY (id_user) REFERENCES public.data_login(id_user) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
@@ -447,7 +513,7 @@ ALTER TABLE ONLY public.info_user
 --
 
 ALTER TABLE ONLY public.info_work
-    ADD CONSTRAINT info_work_name_fkey FOREIGN KEY (name) REFERENCES public.info_user(name);
+    ADD CONSTRAINT info_work_name_fkey FOREIGN KEY (name) REFERENCES public.info_user(name) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --

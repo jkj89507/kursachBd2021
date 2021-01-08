@@ -113,6 +113,12 @@ h2
 {
 	margin-left: -20%;
 }
+.user-info>h1
+{
+	margin-left: 20%;
+	font-size: 2.4rem;
+	color: green;
+}
 
 .login>h2, .password>h2
 {	
@@ -157,6 +163,11 @@ h2
 	margin-top: 4%;
 	background-color: #101010;
 	height: 15vw;
+}
+
+.pay-img
+{
+	margin-top: 3%;
 }
 
 @media only screen and (max-width: 1200px)

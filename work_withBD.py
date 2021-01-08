@@ -61,6 +61,14 @@ class Control:
         array = self.current.fetchall()
         return array
 
+    def printCurrEl(self, nameTable: str, wtfselect='*',orderBy='', limit=10000, ofset=0):
+        if (orderBy == ''): orderBy = self.getTableColums(nameTable)[0]
+        self.current.execute("SELECT {} FROM {} ORDER BY {} LIMIT {} OFFSET {}".format(
+          wtfselect, nameTable, orderBy, limit, ofset)
+        )
+        array = self.current.fetchall()
+        return array
+
 
 #admin = Control("main", "db_creator", "12345Q", "localhost", 5432)
 '''with open('data_login.csv', 'r') as csvfile:
