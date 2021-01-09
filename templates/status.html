@@ -2,7 +2,7 @@
 {% block content %}
 	{{ super() }}
 	{% for item in dict %}
-		<form method="post" action="http://127.0.0.1:5000/">
+		<form method="post" action="http://127.0.0.1:5000/cancel/{{item.curr_service}}/{{item.curr_time}}">
 			<div class="line-link row col-md-12 col-xs-12">	
 				<h3 class="col-md-4 col-xs-4">{{item.curr_service}}</h3>
 				<h3 class="col-md-4 col-xs-4">{{item.curr_time}}</h3>

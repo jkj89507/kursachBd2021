@@ -129,6 +129,16 @@ def status():
 							 b_date=__b_dateUser, b_place=__b_placeUser, 
 							 dict=dictServ, money=__total)
 
+@app.route('/cancel/<ordName>/<ordDate>', methods=["POST"])
+def  cancel(ordName, ordDate):
+	global __total
+	answer = user.printCurrEl("curr_service RIGHT JOIN service ON (curr_service = service.serv_name) WHERE id_user = {} AND curr_time = {} AND curr_service = {}".format(__idUser, addKav(ordDate), addKav(ordName)),
+		"curr_service, curr_time, service.cost")[0]
+	__total += answer[2]
+	user.deleteElTable("curr_service", "id_user={} AND curr_time={} AND curr_service={}".format(__idUser, addKav(ordDate), addKav(ordName)))
+	user.updateElTable("bank_info", "id_user={}".format(__idUser), amount=str(__total))
+	user.deleteElTable("curr_service", "curr_service IS NULL AND curr_time IS NULL")
+	return redirect(url_for('indexer'))
 
 @app.route('/about', methods=["POST"])
 def about():
