@@ -56,6 +56,28 @@ def validate():
 			return redirect(url_for('indexer'))
 		else: return redirect(url_for('login'))
 	
+@app.route('/add', methods=["POST"])
+def add():
+	answer = user.printCurrEl("bank_info WHERE id_user={}".format(__idUser))[0][1][-4:]
+	cardNum = "**** **** **** "+ str(answer) 
+	answer = user.printCurrEl("info_user RIGHT JOIN info_work ON (info_user.name=info_work.name) WHERE info_user.id_user={}".format(__idUser),
+		"info_user.id_user, info_user.name, info_work.phone")
+	phone = answer[0][2]
+	return render_template("addbalance.html", name=__nameUser, 
+							login=__mailUser, b_date=__b_dateUser, 
+							b_place=__b_placeUser, money=__total, 
+							card=cardNum, phone=phone)
+
+@app.route('/up', methods=["POST"])
+def up():
+	global __total
+	addbalance = request.form.get("add")
+	__total = __total + int(addbalance)
+	user.updateElTable("bank_info", "id_user={}".format(__idUser), 
+									amount=str(__total))
+	user.deleteElTable("curr_service", "curr_service IS NULL AND curr_time IS NULL")
+	return redirect(url_for('indexer'))
+
 
 @app.route('/account', methods=["POST"])
 def account():
@@ -64,8 +86,8 @@ def account():
 							b_place=__b_placeUser, password=__passwordUser, 
 							money=__total)
 
-@app.route('/order/<ordName>/<int:ordCost>', methods=["POST"])
-def order(ordName, ordCost):
+@app.route('/order/<ordID>/<ordName>/<int:ordCost>', methods=["POST"])
+def order(ordID, ordName,ordCost):
 	answer = user.printCurrEl("bank_info WHERE id_user={}".format(__idUser))[0][1][-4:]
 	cardNum = "**** **** **** "+ str(answer) 
 	answer = user.printCurrEl("info_user RIGHT JOIN info_work ON (info_user.name=info_work.name) WHERE info_user.id_user={}".format(__idUser),
@@ -87,9 +109,25 @@ def pay(ordCost, ordName):
 	now = getTime()
 	mt = dictMounth[str(now.month)]
 	day = dictDay[str(now.weekday())]
-	user.updateElTable("curr_service", "id_user={}".format(__idUser), 
+	user.updateElTable("curr_service", "id_user={} AND curr_service IS NULL AND curr_time IS NULL".format(__idUser), 
 						curr_service=addKav(ordName), curr_time=addKav(now.strftime("{} {} %d %Y %H:%M:%S").format(day, mt)))
 	return redirect(url_for('indexer'))
+
+@app.route('/status', methods=["POST"])
+def status():
+	dictServ = []
+	for i in (i for i in user.printCurrEl("curr_service WHERE id_user={}".format(__idUser), "*", "curr_time DESC")):
+		helpDict = {}
+		helpDict["id_user"] = int (i[1])
+		helpDict["curr_service"] = i[2]
+		helpDict["curr_time"] = i[3]
+		helpDict["status"] = i[4]
+		if helpDict["status"] == False: helpDict["status"] = "In process"
+		else: helpDict["status"] = "Ready"
+		dictServ.append(helpDict)
+	return render_template("status.html", name=__nameUser, login=__mailUser,
+							 b_date=__b_dateUser, b_place=__b_placeUser, 
+							 dict=dictServ, money=__total)
 
 
 @app.route('/about', methods=["POST"])
@@ -102,11 +140,12 @@ def about():
 def service():
 	dictServ = []
 	for i in (i for i in user.printEl("service")):
-		helpDict = {}
-		helpDict["id"] = int (i[0])
-		helpDict["name"] = i[1]
-		helpDict["cost"] = int(i[2])
-		dictServ.append(helpDict)
+		if __total >= int(i[2]):
+			helpDict = {}
+			helpDict["id"] = int (i[0])
+			helpDict["name"] = i[1]
+			helpDict["cost"] = int(i[2])
+			dictServ.append(helpDict)
 	return render_template("service.html", name=__nameUser, login=__mailUser,
 							 b_date=__b_dateUser, b_place=__b_placeUser, 
 							 dict=dictServ, money=__total)

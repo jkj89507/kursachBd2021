@@ -2,7 +2,7 @@
 {% block content %}
 	{{ super() }}
 	{% for item in dict %}
-		<form method="post" action="http://127.0.0.1:5000/order/{{item.name}}/{{item.cost}}">
+		<form method="post" action="http://127.0.0.1:5000/order/{{item.id}}/{{item.name}}/{{item.cost}}">
 			<button class="bt-about justify-content-center col-md-3 col-xs-3" type="submit">
 				<div class="card-service" title="{{item.name}}">	
 					<img src="{{ url_for('static', filename='images/usl-service.png')}}">

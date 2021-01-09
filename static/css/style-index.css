@@ -98,6 +98,25 @@ h2
 	height: auto;
 }
 
+.line-link
+{
+	height: auto;
+	background-color: #d7d7d7;
+	margin: 1.2%;
+	border-left: 3px solid #C40901;
+}
+
+.line-link>h3
+{
+	font-size: 1.5vh;
+}
+
+.line-link>button
+{
+	margin-top: 1.6%;
+	font-size: 1.6vh;
+}
+
 .menu
 {
 	margin-left: 4%;
