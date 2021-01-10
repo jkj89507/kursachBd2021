@@ -10,6 +10,7 @@ __b_dateUser = ""
 __b_placeUser= ""
 __mailUser = ""
 __passwordUser = ""
+__role = ""
 __idUser = 0
 __total = 0
 now = 0
@@ -41,7 +42,7 @@ def login():
 @app.route('/validate', methods=["POST"])
 def validate():
 	if request.method == "POST":
-		global __nameUser, __mailUser, __b_dateUser, __b_placeUser, __mailUser, __passwordUser, __idUser, __total
+		global __nameUser, __mailUser, __b_dateUser, __b_placeUser, __mailUser, __passwordUser, __idUser, __total, __role, now, user
 		__mailUser = request.form.get("email")
 		__passwordUser = request.form.get("pass")
 		answer = user.printCurrEl("data_login WHERE email={} AND password={}".format(addKav(__mailUser), addKav(__passwordUser)))
@@ -51,8 +52,17 @@ def validate():
 			__nameUser = answer[1]
 			__b_placeUser= answer[2]
 			__b_dateUser = answer[3]
+			__role = answer[4]
 			answer = user.printCurrEl("bank_info WHERE id_user={}".format(__idUser))[0]
 			__total = answer[2]
+			now = getTime()
+			mt = dictMounth[str(now.month)]
+			day = dictDay[str(now.weekday())]
+
+
+			user.createElTable("log", (__mailUser, now.strftime("{} {} %d %Y %H:%M:%S").format(day, mt)))
+			if __role == "owner": 
+				user = Control("main", "head", "123456W", "localhost", 5432)
 			return redirect(url_for('indexer'))
 		else: return redirect(url_for('login'))
 	
@@ -81,7 +91,24 @@ def up():
 
 @app.route('/account', methods=["POST"])
 def account():
-	return render_template("account.html", name=__nameUser, 
+	if __role == "owner":
+		dictServ = [] 
+		answer = user.printCurrEl("data_login RIGHT JOIN info_user ON (data_login.id_user=info_user.id_user) RIGHT JOIN info_work ON (info_work.name = info_user.name)",
+						"data_login.id_user, info_user.name, info_work.phone, data_login.email, data_login.password", "id_user")
+		for i in answer:
+			helpDict = {}
+			helpDict["id_user"] = int(i[0])
+			helpDict["name"] = i[1]
+			helpDict["phone"] = i[2]
+			helpDict["email"] = i[3]
+			helpDict["password"] = i[4]
+			dictServ.append(helpDict)
+
+		return render_template('users.html', nname=__nameUser, login=__mailUser,
+							 b_date=__b_dateUser, b_place=__b_placeUser, 
+							 dict=dictServ, money=__total)
+
+	else: return render_template("account.html", name=__nameUser, 
 							login=__mailUser, b_date=__b_dateUser, 
 							b_place=__b_placeUser, password=__passwordUser, 
 							money=__total)
@@ -156,6 +183,7 @@ def service():
 			helpDict["name"] = i[1]
 			helpDict["cost"] = int(i[2])
 			dictServ.append(helpDict)
+
 	return render_template("service.html", name=__nameUser, login=__mailUser,
 							 b_date=__b_dateUser, b_place=__b_placeUser, 
 							 dict=dictServ, money=__total)
@@ -179,7 +207,11 @@ def change():
 
 @app.route('/main')
 def indexer():
-	return render_template('index.html', name=__nameUser, 
+	if __role == "owner": return render_template('adindex.html', name=__nameUser, 
+							login=__mailUser, b_date=__b_dateUser, 
+							b_place=__b_placeUser, money=__total)
+
+	else: return render_template('index.html', name=__nameUser, 
 							login=__mailUser, b_date=__b_dateUser, 
 							b_place=__b_placeUser, money=__total)
 	

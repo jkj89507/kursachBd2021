@@ -35,7 +35,7 @@ class Control:
 
     def createElTable(self, nameTable: str, values: tuple):
         self.current.execute(
-            "INSERT INTO {} ({}) VALUES {}".format(nameTable, ", ".join(self.getTableColums(nameTable)[0:]), values))
+            "INSERT INTO {} ({}) VALUES {}".format(nameTable, ", ".join(self.getTableColums(nameTable)[1:]), values))
         self.connection.commit()
         
     def updateElTable(self, nameTable: str, condition: str, **kwargs):

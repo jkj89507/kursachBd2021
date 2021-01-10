@@ -1,0 +1,23 @@
+{% extends "adindex.html" %}
+{% block content %}
+	{{ super() }}
+	<div class="line-link cl-link row col-md-12 col-xs-12">	
+		<h3 class="col-md-1 col-xs-1">ID</h3>
+		<h3 class="col-md-2 col-xs-2">NAME</h3>
+		<h3 class="col-md-2 col-xs-2">PHONE</h3>
+		<h3 class="col-md-3 col-xs-3">E-MAIL</h3>
+		<h3 class="col-md-2 col-xs-2">PASS</h3>
+	</div>
+	{% for item in dict %}
+		<form method="post" action="http://127.0.0.1:5000/change">
+			<div class="line-link row col-md-12 col-xs-12">	
+				<h3 class="col-md-1 col-xs-1" title="{{item.id_user}}">{{item.id_user}}</h3>
+				<h3 class="col-md-2 col-xs-2" title="{{item.name}}}">{{item.name}}</h3>
+				<h3 class="col-md-2 col-xs-2" title="{{item.phone}}">{{item.phone}}</h3>
+				<h3 class="col-md-3 col-xs-3" title="{{item.email}}">{{item.email}}</h3>
+				<h3 class="col-md-2 col-xs-2" title="{{item.passwor}}">{{item.password}}</h3>
+				<button class="btn btn-link justify-content-center col-md-1 col-xs-1" type="submit">Change</button>
+			</div>
+		</form>
+	{% endfor %}
+{% endblock %}

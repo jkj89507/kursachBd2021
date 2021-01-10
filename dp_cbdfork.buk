@@ -26,7 +26,7 @@ CREATE FUNCTION public.check_update_curr_service() RETURNS trigger
 BEGIN
 CREATE TABLE IF NOT EXISTS curr_service
 (
-id_user integer REFERENCES data_login (id_user) ON DELETE CASCADE on UPDATE CASCADE,
+id_crser SERIAL PRIMARY KEY, id_user integer REFERENCES data_login (id_user) ON DELETE CASCADE on UPDATE CASCADE,
 curr_service VARCHAR(45),
 curr_time VARCHAR(30),
 status BOOLEAN
@@ -59,45 +59,11 @@ CREATE TABLE public.bank_info (
 ALTER TABLE public.bank_info OWNER TO db_creator;
 
 --
--- Name: callback; Type: TABLE; Schema: public; Owner: db_creator
---
-
-CREATE TABLE public.callback (
-    id_call integer NOT NULL,
-    phone character varying(15),
-    date character varying(25)
-);
-
-
-ALTER TABLE public.callback OWNER TO db_creator;
-
---
--- Name: callback_id_call_seq; Type: SEQUENCE; Schema: public; Owner: db_creator
---
-
-CREATE SEQUENCE public.callback_id_call_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.callback_id_call_seq OWNER TO db_creator;
-
---
--- Name: callback_id_call_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: db_creator
---
-
-ALTER SEQUENCE public.callback_id_call_seq OWNED BY public.callback.id_call;
-
-
---
 -- Name: curr_service; Type: TABLE; Schema: public; Owner: db_creator
 --
 
 CREATE TABLE public.curr_service (
+    id_crser integer NOT NULL,
     id_user integer,
     curr_service character varying(45),
     curr_time character varying(30),
@@ -106,6 +72,28 @@ CREATE TABLE public.curr_service (
 
 
 ALTER TABLE public.curr_service OWNER TO db_creator;
+
+--
+-- Name: curr_service_id_crser_seq; Type: SEQUENCE; Schema: public; Owner: db_creator
+--
+
+CREATE SEQUENCE public.curr_service_id_crser_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.curr_service_id_crser_seq OWNER TO db_creator;
+
+--
+-- Name: curr_service_id_crser_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: db_creator
+--
+
+ALTER SEQUENCE public.curr_service_id_crser_seq OWNED BY public.curr_service.id_crser;
+
 
 --
 -- Name: data_login; Type: TABLE; Schema: public; Owner: db_creator
@@ -150,7 +138,8 @@ CREATE TABLE public.info_user (
     id_user integer,
     name character varying(45),
     home_place character varying(256),
-    b_date character varying(25)
+    b_date character varying(25),
+    role character varying(5) DEFAULT 'user'::character varying
 );
 
 
@@ -241,10 +230,10 @@ ALTER SEQUENCE public.service_id_service_seq OWNED BY public.service.id_service;
 
 
 --
--- Name: callback id_call; Type: DEFAULT; Schema: public; Owner: db_creator
+-- Name: curr_service id_crser; Type: DEFAULT; Schema: public; Owner: db_creator
 --
 
-ALTER TABLE ONLY public.callback ALTER COLUMN id_call SET DEFAULT nextval('public.callback_id_call_seq'::regclass);
+ALTER TABLE ONLY public.curr_service ALTER COLUMN id_crser SET DEFAULT nextval('public.curr_service_id_crser_seq'::regclass);
 
 
 --
@@ -273,24 +262,17 @@ ALTER TABLE ONLY public.service ALTER COLUMN id_service SET DEFAULT nextval('pub
 --
 
 COPY public.bank_info (id_user, card_number, amount) FROM stdin;
-7	9375-8082-2287-2035	4006
+10	6352-8052-9633-6015	2971
+11	1111-1111-1111-1111	56780
+3	8412-0694-6147-8784	1615
+8	5762-8617-1068-7463	108
 1	5936-4683-3586-4903	1000
-3	8412-0694-6147-8784	319
 5	4366-9189-0650-3371	3259
 9	8491-7605-6703-3309	781
 6	5914-8818-6107-4327	2223
-10	6352-8052-9633-6015	2914
 2	2388-7329-8436-8503	3657
-4	9475-1582-1745-2025	3180
-8	5762-8617-1068-7463	2198
-\.
-
-
---
--- Data for Name: callback; Type: TABLE DATA; Schema: public; Owner: db_creator
---
-
-COPY public.callback (id_call, phone, date) FROM stdin;
+4	9475-1582-1745-2025	6472
+7	9375-8082-2287-2035	1674
 \.
 
 
@@ -298,12 +280,15 @@ COPY public.callback (id_call, phone, date) FROM stdin;
 -- Data for Name: curr_service; Type: TABLE DATA; Schema: public; Owner: db_creator
 --
 
-COPY public.curr_service (id_user, curr_service, curr_time, status) FROM stdin;
-2	\N	\N	f
-4	Changing the oil in the i	Fri Jan 08 2021 05:55:57	f
-4	Changing the oil in the i	Fri Jan 08 2021 05:55:57	f
-8	Replacing the oil filter	Fri Jan 08 2021 05:58:31	f
-8	Replacing the oil filter	Fri Jan 08 2021 05:58:31	f
+COPY public.curr_service (id_crser, id_user, curr_service, curr_time, status) FROM stdin;
+1	4	Replacing the coolant	Sat Jan 09 2021 02:11:38	f
+3	4	Replacing spark plugs	Sat Jan 09 2021 02:12:22	f
+4	4	Resetting service interva	Sat Jan 09 2021 02:13:07	f
+5	8	Power steering fluid repl	Sat Jan 09 2021 02:14:01	f
+6	8	Flushing the injector	Sat Jan 09 2021 02:14:18	f
+28	7	Replacing the coolant	Sat Jan 09 2021 05:08:20	f
+33	10	Replacing the cooling sys	Sat Jan 09 2021 05:13:31	f
+36	10	Power steering fluid repl	Sat Jan 09 2021 05:14:38	f
 \.
 
 
@@ -322,6 +307,7 @@ Raven75@hotmail.com	aDmhM5TCzJtvm1B	10
 Marlen32@gmail.com	sdfsdFrgreget43	1
 Deoste89@mail.com	dsvsdv3456	5
 Tanner11@mailhot.com	PeeB3vkGFqt1e9X	2
+owner@owner.com	RVrevsrd2391	11
 \.
 
 
@@ -329,17 +315,18 @@ Tanner11@mailhot.com	PeeB3vkGFqt1e9X	2
 -- Data for Name: info_user; Type: TABLE DATA; Schema: public; Owner: db_creator
 --
 
-COPY public.info_user (id_user, name, home_place, b_date) FROM stdin;
-3	Aaliyah Botsford	Libyan Arab Jamahiriya New Waylontown 59315 Bartoletti Islands Gaylord Cliff Apt. 201	Mon Mar 09 1970 11:41:44 
-4	Aaliyah Brakus	Saudi Arabia South Margie 66523 Robel Trace Stracke Expressway Suite 909	Mon Jul 05 1937 05:04:22 
-6	Aaliyah Dietrich	Turkmenistan Port Cristian 1948 Zboncak Point Grimes Drive Suite 518	Wed Apr 19 1967 14:24:36 
-7	Aaliyah Doyle	Greenland East Violabury 24825 Blanda Gateway Hulda Grove Suite 986	Tue Jun 26 1956 11:38:49 
-8	Aaliyah Gibson	Costa Rica Leannafurt 1328 Preston Causeway Langosh Via Suite 123	Tue Oct 10 1995 19:29:10 
-9	Aaliyah Gislason	Saint Vincent and the Grenadines Jameltown 17908 Guido Groves Demarco Stream Suite 815	Mon Dec 08 1958 05:45:42 
-10	Aaliyah Glover	Tokelau Violabury 995 Jocelyn Summit Lesch Islands Suite 620	Sun Feb 13 1949 20:42:29 
-1	Banan Ananas	Saint Kitts and Nevis Vincenzaton 18941 Ellen Heights Kaya Plain Apt. 607	Mon Jun 1 1958 21:04:37
-5	Aliah Barowin	French Guiana Paris Apakra street 5b	Mon Jan 1 1930 21:04:37
-2	Aaliyah Veiber	Ireland West Patiencebury 3241 Kertzmann Crossroad Jewell Shores Apt. 925	Mon Jun 15 1977 21:04:37
+COPY public.info_user (id_user, name, home_place, b_date, role) FROM stdin;
+3	Aaliyah Botsford	Libyan Arab Jamahiriya New Waylontown 59315 Bartoletti Islands Gaylord Cliff Apt. 201	Mon Mar 09 1970 11:41:44 	user
+4	Aaliyah Brakus	Saudi Arabia South Margie 66523 Robel Trace Stracke Expressway Suite 909	Mon Jul 05 1937 05:04:22 	user
+6	Aaliyah Dietrich	Turkmenistan Port Cristian 1948 Zboncak Point Grimes Drive Suite 518	Wed Apr 19 1967 14:24:36 	user
+7	Aaliyah Doyle	Greenland East Violabury 24825 Blanda Gateway Hulda Grove Suite 986	Tue Jun 26 1956 11:38:49 	user
+8	Aaliyah Gibson	Costa Rica Leannafurt 1328 Preston Causeway Langosh Via Suite 123	Tue Oct 10 1995 19:29:10 	user
+9	Aaliyah Gislason	Saint Vincent and the Grenadines Jameltown 17908 Guido Groves Demarco Stream Suite 815	Mon Dec 08 1958 05:45:42 	user
+10	Aaliyah Glover	Tokelau Violabury 995 Jocelyn Summit Lesch Islands Suite 620	Sun Feb 13 1949 20:42:29 	user
+1	Banan Ananas	Saint Kitts and Nevis Vincenzaton 18941 Ellen Heights Kaya Plain Apt. 607	Mon Jun 1 1958 21:04:37	user
+5	Aliah Barowin	French Guiana Paris Apakra street 5b	Mon Jan 1 1930 21:04:37	user
+2	Aaliyah Veiber	Ireland West Patiencebury 3241 Kertzmann Crossroad Jewell Shores Apt. 925	Mon Jun 15 1977 21:04:37	user
+11	Sergey Davididov	RF Mari El Yoshkar-Ola Volkova 149 Apt. 149	Sun Aug 27 1986 23:14:25	owner
 \.
 
 
@@ -366,6 +353,21 @@ Aaliyah Veiber	635.613.4207 x5421	Moen and Sons
 --
 
 COPY public.log (id_log, email, date_log) FROM stdin;
+1	Jordyn50@gmail.com	Sat Jan 09 2021 06:03:39
+2	owner@owner.com	Sun Jan 10 2021 03:24:17
+3	owner@owner.com	Sun Jan 10 2021 03:28:53
+4	owner@owner.com	Sun Jan 10 2021 03:50:19
+5	owner@owner.com	Sun Jan 10 2021 03:51:57
+6	owner@owner.com	Sun Jan 10 2021 03:57:13
+7	owner@owner.com	Sun Jan 10 2021 03:58:15
+8	owner@owner.com	Sun Jan 10 2021 04:05:16
+9	Tanner11@mailhot.com	Sun Jan 10 2021 04:07:23
+10	owner@owner.com	Sun Jan 10 2021 04:08:00
+11	owner@owner.com	Sun Jan 10 2021 04:10:22
+12	owner@owner.com	Sun Jan 10 2021 04:26:45
+13	owner@owner.com	Sun Jan 10 2021 04:42:06
+14	owner@owner.com	Sun Jan 10 2021 06:17:31
+15	owner@owner.com	Sun Jan 10 2021 06:18:52
 \.
 
 
@@ -394,24 +396,24 @@ COPY public.service (id_service, serv_name, cost) FROM stdin;
 
 
 --
--- Name: callback_id_call_seq; Type: SEQUENCE SET; Schema: public; Owner: db_creator
+-- Name: curr_service_id_crser_seq; Type: SEQUENCE SET; Schema: public; Owner: db_creator
 --
 
-SELECT pg_catalog.setval('public.callback_id_call_seq', 1, false);
+SELECT pg_catalog.setval('public.curr_service_id_crser_seq', 38, true);
 
 
 --
 -- Name: data_login_id_user_seq; Type: SEQUENCE SET; Schema: public; Owner: db_creator
 --
 
-SELECT pg_catalog.setval('public.data_login_id_user_seq', 1, false);
+SELECT pg_catalog.setval('public.data_login_id_user_seq', 1, true);
 
 
 --
 -- Name: log_id_log_seq; Type: SEQUENCE SET; Schema: public; Owner: db_creator
 --
 
-SELECT pg_catalog.setval('public.log_id_log_seq', 1, false);
+SELECT pg_catalog.setval('public.log_id_log_seq', 15, true);
 
 
 --
@@ -422,11 +424,11 @@ SELECT pg_catalog.setval('public.service_id_service_seq', 1, false);
 
 
 --
--- Name: callback callback_id_call_key; Type: CONSTRAINT; Schema: public; Owner: db_creator
+-- Name: curr_service curr_service_pkey; Type: CONSTRAINT; Schema: public; Owner: db_creator
 --
 
-ALTER TABLE ONLY public.callback
-    ADD CONSTRAINT callback_id_call_key UNIQUE (id_call);
+ALTER TABLE ONLY public.curr_service
+    ADD CONSTRAINT curr_service_pkey PRIMARY KEY (id_crser);
 
 
 --
@@ -462,11 +464,11 @@ ALTER TABLE ONLY public.info_work
 
 
 --
--- Name: log log_id_log_key; Type: CONSTRAINT; Schema: public; Owner: db_creator
+-- Name: log log_pkey; Type: CONSTRAINT; Schema: public; Owner: db_creator
 --
 
 ALTER TABLE ONLY public.log
-    ADD CONSTRAINT log_id_log_key UNIQUE (id_log);
+    ADD CONSTRAINT log_pkey PRIMARY KEY (id_log);
 
 
 --
@@ -521,7 +523,7 @@ ALTER TABLE ONLY public.info_work
 --
 
 ALTER TABLE ONLY public.log
-    ADD CONSTRAINT log_email_fkey FOREIGN KEY (email) REFERENCES public.data_login(email);
+    ADD CONSTRAINT log_email_fkey FOREIGN KEY (email) REFERENCES public.data_login(email) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
