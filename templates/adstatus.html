@@ -1,0 +1,41 @@
+{% extends "adindex.html" %}
+{% block content %}
+	{{ super() }}
+	<div class="line-link cl-link row col-md-12 col-xs-12">	
+		<h3 class="col-md-1 col-xs-2">ID_USER</h3>
+		<h3 class="col-md-2 col-xs-2">NAME</h3>
+		<h3 class="col-md-1 col-xs-1">CURR_SERV</h3>
+		<h3 class="col-md-2 col-xs-2">CURR_TIME</h3>
+		<h3 class="col-md-1 col-xs-1">COST</h3>
+		<h3 class="col-md-2 col-xs-2">STATUS</h3>
+	</div>
+	{% for item in dict %}
+		<div class="line-link row col-md-12 col-xs-12">
+			<h3 class="col-md-1 col-xs-2">{{item.id_user}}</h3>
+			<h3 class="col-md-2 col-xs-2">{{item.name}}</h3>	
+			<h3 class="col-md-1 col-xs-1">{{item.curr_service}}</h3>
+			<h3 class="col-md-2 col-xs-2">{{item.curr_time}}</h3>
+			<h3 class="col-md-1 col-xs-1">{{item.cost}}$</h3>
+			<h3 class="col-md-1 col-xs-1">{{item.status}}</h3>
+			{% if item.status != "Ready" %}
+				<div class="row">
+					<form method="post" action="http://127.0.0.1:5000/cancel/{{item.id_user}}/{{item.curr_service}}/{{item.curr_time}}">
+					<button class="btn btn-link justify-content-center" type="submit">Cancel</button>
+				</form>
+				<form method="post" action="http://127.0.0.1:5000/done/{{item.id_user}}/{{item.curr_service}}/{{item.curr_time}}">
+					<button class="btn btn-link justify-content-center" type="submit">Done</button>
+				</form>
+				</div>
+			{% endif %}
+		</div>
+	{% endfor %}
+	{% if cpg != 1 %}
+		<form method="post" action="http://127.0.0.1:5000/lastPg">
+			<button class="btn btn-link justify-content-center col-md-1 col-md-offset-4 col-xs-1 col-xs-offset-4" type="submit"><--Last</button>
+		</form>
+	{% endif %}
+	<button class="btn btn-link justify-content-center col-md-1 col-md-offset-1 col-xs-1 col-xs-offset-1 no-click" type="submit">Page: {{cpg}}</button>
+	<form method="post" action="http://127.0.0.1:5000/nextPg">
+		<button class="btn btn-link justify-content-center col-md-1 col-md-offset-1 col-xs-1 col-xs-offset-1" type="submit">Next--></button>
+	</form>
+{% endblock %}

@@ -14,6 +14,8 @@ __role = ""
 __idUser = 0
 __total = 0
 now = 0
+curr_pg_user = 0
+curr_pg_st = 0
 
 '''def checkLogin(login):
 	if login == "":
@@ -82,19 +84,34 @@ def add():
 def up():
 	global __total
 	addbalance = request.form.get("add")
-	__total = __total + int(addbalance)
+	__total = __total + int(addbalance)							
 	user.updateElTable("bank_info", "id_user={}".format(__idUser), 
 									amount=str(__total))
 	user.deleteElTable("curr_service", "curr_service IS NULL AND curr_time IS NULL")
 	return redirect(url_for('indexer'))
 
 
-@app.route('/account', methods=["POST"])
+@app.route('/last', methods=["POST"])
+def last():
+	global curr_pg_user
+	curr_pg_user -= 5
+	return redirect(url_for('account'))
+
+
+@app.route('/next', methods=["POST"])
+def next():
+	global curr_pg_user
+	curr_pg_user += 5
+	return redirect(url_for('account'))
+	
+
+
+@app.route('/account', methods=["POST", "GET"])
 def account():
 	if __role == "owner":
 		dictServ = [] 
 		answer = user.printCurrEl("data_login RIGHT JOIN info_user ON (data_login.id_user=info_user.id_user) RIGHT JOIN info_work ON (info_work.name = info_user.name)",
-						"data_login.id_user, info_user.name, info_work.phone, data_login.email, data_login.password", "id_user")
+						"data_login.id_user, info_user.name, info_work.phone, data_login.email, data_login.password", "id_user", 5, curr_pg_user)
 		for i in answer:
 			helpDict = {}
 			helpDict["id_user"] = int(i[0])
@@ -104,14 +121,29 @@ def account():
 			helpDict["password"] = i[4]
 			dictServ.append(helpDict)
 
-		return render_template('users.html', nname=__nameUser, login=__mailUser,
-							 b_date=__b_dateUser, b_place=__b_placeUser, 
-							 dict=dictServ, money=__total)
+		return render_template('users.html', name=__nameUser, 
+							login=__mailUser, b_date=__b_dateUser, 
+							b_place=__b_placeUser, dict=dictServ, 
+							money=__total, cpg=int(curr_pg_user/5)+1)
 
 	else: return render_template("account.html", name=__nameUser, 
 							login=__mailUser, b_date=__b_dateUser, 
 							b_place=__b_placeUser, password=__passwordUser, 
 							money=__total)
+
+@app.route('/edit/<id_user>', methods=["POST"])
+def edit(id_user):
+	answer = user.printCurrEl("data_login RIGHT JOIN info_user ON (data_login.id_user=info_user.id_user) RIGHT JOIN info_work ON (info_work.name = info_user.name) WHERE data_login.id_user={}".format(id_user),
+						"data_login.id_user, info_user.name, info_work.phone, data_login.email, data_login.password", "id_user")[0]
+	helpDict = {}
+	helpDict["id_user"] = int(answer[0])
+	helpDict["name"] = answer[1]
+	helpDict["phone"] = answer[2]
+	helpDict["email"] = answer[3]
+	helpDict["password"] = answer[4]
+	return render_template("adccount.html", dict=helpDict,
+							name=__nameUser, login=__mailUser,
+							b_date=__b_dateUser, b_place=__b_placeUser)
 
 @app.route('/order/<ordID>/<ordName>/<int:ordCost>', methods=["POST"])
 def order(ordID, ordName,ordCost):
@@ -140,7 +172,7 @@ def pay(ordCost, ordName):
 						curr_service=addKav(ordName), curr_time=addKav(now.strftime("{} {} %d %Y %H:%M:%S").format(day, mt)))
 	return redirect(url_for('indexer'))
 
-@app.route('/status', methods=["POST"])
+@app.route('/status', methods=["POST", "GET"])
 def status():
 	dictServ = []
 	for i in (i for i in user.printCurrEl("curr_service WHERE id_user={}".format(__idUser), "*", "curr_time DESC")):
@@ -156,16 +188,45 @@ def status():
 							 b_date=__b_dateUser, b_place=__b_placeUser, 
 							 dict=dictServ, money=__total)
 
+@app.route('/done/<idUser>/<ordName>/<ordDate>', methods=["POST"])
+def  done (idUser, ordName, ordDate):
+	global __total
+	if __role == "owner":
+		answer = user.printCurrEl("curr_service RIGHT JOIN service ON (curr_service.curr_service = service.serv_name) WHERE id_user = {} AND curr_time = {} AND curr_service = {}".format(idUser, addKav(ordDate), addKav(ordName)),
+			"curr_service, curr_time, service.cost")[0]
+		plus = answer[2]
+		user.updateElTable("curr_service", "id_user={} AND curr_time={} AND curr_service={}".format(idUser, addKav(ordDate), addKav(ordName)), status=addKav('TRUE'))
+		__total += plus
+		user.updateElTable("bank_info", "id_user={}".format(__idUser), amount=str(__total))
+		user.deleteElTable("curr_service", "curr_service IS NULL AND curr_time IS NULL")
+		return redirect(url_for('service'))
+
+
+@app.route('/cancel/<idUser>/<ordName>/<ordDate>', methods=["POST"])
+def  canceler (idUser, ordName, ordDate):
+	global __total
+	if __role == "owner":
+		answer = user.printCurrEl("curr_service RIGHT JOIN service ON (curr_service.curr_service = service.serv_name) WHERE id_user = {} AND curr_time = {} AND curr_service = {}".format(idUser, addKav(ordDate), addKav(ordName)),
+			"curr_service, curr_time, service.cost")[0]
+		minus = answer[2]
+		user.deleteElTable("curr_service", "id_user={} AND curr_time={} AND curr_service={}".format(idUser, addKav(ordDate), addKav(ordName)))
+		answer = user.printCurrEl("bank_info WHERE id_user={}".format(idUser))[0]
+		summ = answer[2] + minus
+		user.updateElTable("bank_info", "id_user={}".format(idUser), amount=str(summ))
+		user.deleteElTable("curr_service", "curr_service IS NULL AND curr_time IS NULL")
+		return redirect(url_for('service'))
+
 @app.route('/cancel/<ordName>/<ordDate>', methods=["POST"])
 def  cancel(ordName, ordDate):
 	global __total
-	answer = user.printCurrEl("curr_service RIGHT JOIN service ON (curr_service = service.serv_name) WHERE id_user = {} AND curr_time = {} AND curr_service = {}".format(__idUser, addKav(ordDate), addKav(ordName)),
+
+	answer = user.printCurrEl("curr_service RIGHT JOIN service ON (curr_service.curr_service = service.serv_name) WHERE id_user = {} AND curr_time = {} AND curr_service = {}".format(__idUser, addKav(ordDate), addKav(ordName)),
 		"curr_service, curr_time, service.cost")[0]
 	__total += answer[2]
 	user.deleteElTable("curr_service", "id_user={} AND curr_time={} AND curr_service={}".format(__idUser, addKav(ordDate), addKav(ordName)))
 	user.updateElTable("bank_info", "id_user={}".format(__idUser), amount=str(__total))
 	user.deleteElTable("curr_service", "curr_service IS NULL AND curr_time IS NULL")
-	return redirect(url_for('indexer'))
+	return redirect(url_for('service'))
 
 @app.route('/about', methods=["POST"])
 def about():
@@ -173,21 +234,66 @@ def about():
 							login=__mailUser, b_date=__b_dateUser, 
 							b_place=__b_placeUser, money=__total)
 
-@app.route('/service', methods=["POST"])
+@app.route('/lastPg', methods=["POST"])
+def lastPg():
+	global curr_pg_st
+	curr_pg_st -= 5
+	return redirect(url_for('service'))
+
+
+@app.route('/nextPg', methods=["POST"])
+def nextPg():
+	global curr_pg_st
+	curr_pg_st += 5
+	return redirect(url_for('service'))
+
+@app.route('/service', methods=["POST", "GET"])
 def service():
 	dictServ = []
-	for i in (i for i in user.printEl("service")):
-		if __total >= int(i[2]):
+	if __role == "owner":
+		for i in (i for i in user.printCurrEl("curr_service RIGHT JOIN info_user ON (curr_service.id_user = info_user.id_user) RIGHT JOIN service ON (curr_service.curr_service = service.serv_name) WHERE curr_service.curr_service IS NOT NULL", 
+											"curr_service.id_user, info_user.name ,curr_service.curr_service, curr_service.curr_time, service.cost, curr_service.status",
+											 "curr_service.curr_time DESC", 5, curr_pg_st)):	
 			helpDict = {}
-			helpDict["id"] = int (i[0])
+			helpDict["id_user"] = int(i[0])
 			helpDict["name"] = i[1]
-			helpDict["cost"] = int(i[2])
+			helpDict["curr_service"] = i[2]
+			helpDict["curr_time"] = i[3]
+			helpDict["cost"] = i[4]
+			helpDict["status"] = i[5]
+			if helpDict["status"] == False: helpDict["status"] = "In process"
+			else: helpDict["status"] = "Ready"
 			dictServ.append(helpDict)
+		return render_template("adstatus.html", name=__nameUser, login=__mailUser,
+								 b_date=__b_dateUser, b_place=__b_placeUser, 
+								 dict=dictServ, money=__total, cpg=int(curr_pg_st/5)+1)
+	else:
+		for i in (i for i in user.printEl("service")):
+			if __total >= int(i[2]):
+				helpDict = {}
+				helpDict["id"] = int (i[0])
+				helpDict["name"] = i[1]
+				helpDict["cost"] = int(i[2])
+				dictServ.append(helpDict)
 
-	return render_template("service.html", name=__nameUser, login=__mailUser,
-							 b_date=__b_dateUser, b_place=__b_placeUser, 
-							 dict=dictServ, money=__total)
+		return render_template("service.html", name=__nameUser, login=__mailUser,
+								 b_date=__b_dateUser, b_place=__b_placeUser, 
+								 dict=dictServ, money=__total)
 
+@app.route('/change/<id_user>', methods=["POST"])
+def changeByAdmin(id_user):
+	if __role == "owner":
+		nameUser = request.form.get("name")
+		mailUser = request.form.get("login")
+		phone = request.form.get("phone")
+		passwordUser = request.form.get("pass")
+		user.updateElTable("data_login", "id_user="+str(id_user), 
+								email=addKav(mailUser), password=addKav(passwordUser))
+		user.updateElTable("info_user", "id_user="+str(id_user), 
+								name=addKav(nameUser))
+		user.updateElTable("info_work", "name={}".format(addKav(nameUser)),
+								phone=addKav(phone))
+		return redirect(url_for('indexer'))
 
 @app.route('/change', methods=["POST"])
 def change():

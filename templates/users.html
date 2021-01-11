@@ -9,7 +9,7 @@
 		<h3 class="col-md-2 col-xs-2">PASS</h3>
 	</div>
 	{% for item in dict %}
-		<form method="post" action="http://127.0.0.1:5000/change">
+		<form method="post" action="http://127.0.0.1:5000/edit/{{item.id_user}}">
 			<div class="line-link row col-md-12 col-xs-12">	
 				<h3 class="col-md-1 col-xs-1" title="{{item.id_user}}">{{item.id_user}}</h3>
 				<h3 class="col-md-2 col-xs-2" title="{{item.name}}}">{{item.name}}</h3>
@@ -20,4 +20,13 @@
 			</div>
 		</form>
 	{% endfor %}
+	{% if cpg != 1 %}
+		<form method="post" action="http://127.0.0.1:5000/last">
+			<button class="btn btn-link justify-content-center col-md-1 col-md-offset-4 col-xs-1 col-xs-offset-4" type="submit"><--Last</button>
+		</form>
+	{% endif %}
+	<button class="btn btn-link justify-content-center col-md-1 col-md-offset-1 col-xs-1 col-xs-offset-1 no-click" type="submit">Page: {{cpg}}</button>
+	<form method="post" action="http://127.0.0.1:5000/next">
+		<button class="btn btn-link justify-content-center col-md-1 col-md-offset-1 col-xs-1 col-xs-offset-1" type="submit">Next--></button>
+	</form>
 {% endblock %}

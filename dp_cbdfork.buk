@@ -263,16 +263,16 @@ ALTER TABLE ONLY public.service ALTER COLUMN id_service SET DEFAULT nextval('pub
 
 COPY public.bank_info (id_user, card_number, amount) FROM stdin;
 10	6352-8052-9633-6015	2971
-11	1111-1111-1111-1111	56780
+2	2388-7329-8436-8503	2227
+8	5762-8617-1068-7463	2397
 3	8412-0694-6147-8784	1615
-8	5762-8617-1068-7463	108
-1	5936-4683-3586-4903	1000
+1	5936-4683-3586-4903	5400
+7	9375-8082-2287-2035	6241
+4	9475-1582-1745-2025	10972
+11	1111-1111-1111-1111	53623
 5	4366-9189-0650-3371	3259
 9	8491-7605-6703-3309	781
 6	5914-8818-6107-4327	2223
-2	2388-7329-8436-8503	3657
-4	9475-1582-1745-2025	6472
-7	9375-8082-2287-2035	1674
 \.
 
 
@@ -281,14 +281,9 @@ COPY public.bank_info (id_user, card_number, amount) FROM stdin;
 --
 
 COPY public.curr_service (id_crser, id_user, curr_service, curr_time, status) FROM stdin;
-1	4	Replacing the coolant	Sat Jan 09 2021 02:11:38	f
-3	4	Replacing spark plugs	Sat Jan 09 2021 02:12:22	f
-4	4	Resetting service interva	Sat Jan 09 2021 02:13:07	f
-5	8	Power steering fluid repl	Sat Jan 09 2021 02:14:01	f
-6	8	Flushing the injector	Sat Jan 09 2021 02:14:18	f
-28	7	Replacing the coolant	Sat Jan 09 2021 05:08:20	f
-33	10	Replacing the cooling sys	Sat Jan 09 2021 05:13:31	f
-36	10	Power steering fluid repl	Sat Jan 09 2021 05:14:38	f
+3	4	Replacing spark plugs	Sat Jan 09 2021 02:12:22	t
+47	2	Oil change	Mon Jan 11 2021 07:41:56	t
+4	4	Resetting service interva	Sat Jan 09 2021 02:13:07	t
 \.
 
 
@@ -298,16 +293,16 @@ COPY public.curr_service (id_crser, id_user, curr_service, curr_time, status) FR
 
 COPY public.data_login (email, password, id_user) FROM stdin;
 Jordyn50@gmail.com	ZllCNCCl5uJ_Xwg	3
-Janet.Wiegand39@hotmail.com	vAtLRrkVB1BkZGw	4
 Lynn.Bauch@hotmail.com	ReAiXYcdvXb7STi	6
 Rylan.Franecki89@yahoo.com	2N4_PqWAq4Iy14b	7
 Edmund30@gmail.com	97QvHQSUznoDGMs	8
 Justen81@yahoo.com	2G6az_l6nA2Gpb9	9
 Raven75@hotmail.com	aDmhM5TCzJtvm1B	10
-Marlen32@gmail.com	sdfsdFrgreget43	1
 Deoste89@mail.com	dsvsdv3456	5
 Tanner11@mailhot.com	PeeB3vkGFqt1e9X	2
 owner@owner.com	RVrevsrd2391	11
+Janet.Wiegan419@hotmail.com	vAtLRrkVB1BkZGw	4
+Mralen41@gmail.com	eRtger456234	1
 \.
 
 
@@ -317,16 +312,16 @@ owner@owner.com	RVrevsrd2391	11
 
 COPY public.info_user (id_user, name, home_place, b_date, role) FROM stdin;
 3	Aaliyah Botsford	Libyan Arab Jamahiriya New Waylontown 59315 Bartoletti Islands Gaylord Cliff Apt. 201	Mon Mar 09 1970 11:41:44 	user
-4	Aaliyah Brakus	Saudi Arabia South Margie 66523 Robel Trace Stracke Expressway Suite 909	Mon Jul 05 1937 05:04:22 	user
 6	Aaliyah Dietrich	Turkmenistan Port Cristian 1948 Zboncak Point Grimes Drive Suite 518	Wed Apr 19 1967 14:24:36 	user
 7	Aaliyah Doyle	Greenland East Violabury 24825 Blanda Gateway Hulda Grove Suite 986	Tue Jun 26 1956 11:38:49 	user
 8	Aaliyah Gibson	Costa Rica Leannafurt 1328 Preston Causeway Langosh Via Suite 123	Tue Oct 10 1995 19:29:10 	user
 9	Aaliyah Gislason	Saint Vincent and the Grenadines Jameltown 17908 Guido Groves Demarco Stream Suite 815	Mon Dec 08 1958 05:45:42 	user
 10	Aaliyah Glover	Tokelau Violabury 995 Jocelyn Summit Lesch Islands Suite 620	Sun Feb 13 1949 20:42:29 	user
-1	Banan Ananas	Saint Kitts and Nevis Vincenzaton 18941 Ellen Heights Kaya Plain Apt. 607	Mon Jun 1 1958 21:04:37	user
 5	Aliah Barowin	French Guiana Paris Apakra street 5b	Mon Jan 1 1930 21:04:37	user
 2	Aaliyah Veiber	Ireland West Patiencebury 3241 Kertzmann Crossroad Jewell Shores Apt. 925	Mon Jun 15 1977 21:04:37	user
 11	Sergey Davididov	RF Mari El Yoshkar-Ola Volkova 149 Apt. 149	Sun Aug 27 1986 23:14:25	owner
+4	Aaliyah Braker	Saudi Arabia South Margie 6523 Robel Trace Stracke Expressway Suite 909	Mon Oct 8 1954 21:04:37	user
+1	Bananer Ananas	Saint Kitts and Nevis Vincenzaton 18941 Ellen Heights Kaya Plain Apt. 607	Mon Jun 1 1958 21:04:37	user
 \.
 
 
@@ -336,15 +331,15 @@ COPY public.info_user (id_user, name, home_place, b_date, role) FROM stdin;
 
 COPY public.info_work (name, phone, work_place) FROM stdin;
 Aaliyah Botsford	109.871.6464 x7498	Pfannerstill - Watsica
-Aaliyah Brakus	699-162-6413 x6702	Welch
 Aaliyah Dietrich	317-698-4916 x2735	Zboncak
 Aaliyah Doyle	1-812-092-7813 x7775	Wunsch
 Aaliyah Gibson	836-117-6756	Abshire - Reilly
 Aaliyah Gislason	254-716-1755 x5687	Sauer Group
 Aaliyah Glover	(547) 511-9002	Schneider
-Banan Ananas	1-430-166-8115	Jast LLC
 Aliah Barowin	427.182.1660	Trantow
 Aaliyah Veiber	635.613.4207 x5421	Moen and Sons
+Aaliyah Braker	699-162-6413 x6702	Welch
+Bananer Ananas	3-530-177-8225	Jast LLC
 \.
 
 
@@ -368,6 +363,72 @@ COPY public.log (id_log, email, date_log) FROM stdin;
 13	owner@owner.com	Sun Jan 10 2021 04:42:06
 14	owner@owner.com	Sun Jan 10 2021 06:17:31
 15	owner@owner.com	Sun Jan 10 2021 06:18:52
+16	Janet.Wiegan419@hotmail.com	Sun Jan 10 2021 22:21:28
+17	owner@owner.com	Sun Jan 10 2021 22:25:55
+18	Jordyn50@gmail.com	Sun Jan 10 2021 22:50:10
+19	owner@owner.com	Sun Jan 10 2021 22:50:38
+20	owner@owner.com	Mon Jan 11 2021 00:15:50
+21	owner@owner.com	Mon Jan 11 2021 00:22:02
+22	owner@owner.com	Mon Jan 11 2021 00:25:04
+23	owner@owner.com	Mon Jan 11 2021 00:26:05
+24	owner@owner.com	Mon Jan 11 2021 00:27:57
+25	owner@owner.com	Mon Jan 11 2021 00:28:58
+26	owner@owner.com	Mon Jan 11 2021 01:02:27
+27	owner@owner.com	Mon Jan 11 2021 01:04:49
+28	owner@owner.com	Mon Jan 11 2021 01:12:45
+29	owner@owner.com	Mon Jan 11 2021 01:21:57
+30	owner@owner.com	Mon Jan 11 2021 02:03:49
+31	owner@owner.com	Mon Jan 11 2021 02:11:19
+32	owner@owner.com	Mon Jan 11 2021 02:14:29
+33	owner@owner.com	Mon Jan 11 2021 02:19:41
+34	owner@owner.com	Mon Jan 11 2021 02:20:47
+35	owner@owner.com	Mon Jan 11 2021 02:26:34
+36	owner@owner.com	Mon Jan 11 2021 02:29:29
+37	owner@owner.com	Mon Jan 11 2021 02:33:39
+38	owner@owner.com	Mon Jan 11 2021 02:44:54
+39	owner@owner.com	Mon Jan 11 2021 02:49:01
+40	owner@owner.com	Mon Jan 11 2021 03:08:45
+41	owner@owner.com	Mon Jan 11 2021 03:15:07
+42	owner@owner.com	Mon Jan 11 2021 03:20:41
+43	owner@owner.com	Mon Jan 11 2021 03:28:10
+44	owner@owner.com	Mon Jan 11 2021 03:29:03
+45	owner@owner.com	Mon Jan 11 2021 03:45:23
+46	owner@owner.com	Mon Jan 11 2021 03:46:19
+47	owner@owner.com	Mon Jan 11 2021 03:48:32
+48	owner@owner.com	Mon Jan 11 2021 03:51:16
+49	owner@owner.com	Mon Jan 11 2021 04:03:46
+50	owner@owner.com	Mon Jan 11 2021 04:21:45
+51	owner@owner.com	Mon Jan 11 2021 04:24:04
+52	owner@owner.com	Mon Jan 11 2021 04:29:52
+53	owner@owner.com	Mon Jan 11 2021 05:04:34
+54	owner@owner.com	Mon Jan 11 2021 05:36:25
+55	owner@owner.com	Mon Jan 11 2021 05:38:29
+56	owner@owner.com	Mon Jan 11 2021 05:43:45
+57	owner@owner.com	Mon Jan 11 2021 06:49:22
+58	owner@owner.com	Mon Jan 11 2021 07:03:23
+59	owner@owner.com	Mon Jan 11 2021 07:05:41
+60	owner@owner.com	Mon Jan 11 2021 07:14:17
+61	owner@owner.com	Mon Jan 11 2021 07:16:35
+62	owner@owner.com	Mon Jan 11 2021 07:18:28
+63	owner@owner.com	Mon Jan 11 2021 07:37:59
+64	owner@owner.com	Mon Jan 11 2021 07:39:17
+65	Tanner11@mailhot.com	Mon Jan 11 2021 07:41:20
+66	Rylan.Franecki89@yahoo.com	Mon Jan 11 2021 07:52:56
+67	owner@owner.com	Mon Jan 11 2021 07:54:06
+68	Edmund30@gmail.com	Mon Jan 11 2021 07:59:47
+69	owner@owner.com	Mon Jan 11 2021 08:01:02
+70	Mralen41@gmail.com	Mon Jan 11 2021 08:03:34
+71	owner@owner.com	Mon Jan 11 2021 08:04:45
+72	Janet.Wiegan419@hotmail.com	Mon Jan 11 2021 08:11:08
+73	owner@owner.com	Mon Jan 11 2021 08:11:59
+74	owner@owner.com	Mon Jan 11 2021 08:21:08
+75	owner@owner.com	Mon Jan 11 2021 08:34:06
+76	owner@owner.com	Mon Jan 11 2021 08:36:56
+77	owner@owner.com	Mon Jan 11 2021 08:38:03
+78	owner@owner.com	Mon Jan 11 2021 08:39:30
+79	owner@owner.com	Mon Jan 11 2021 08:40:51
+80	owner@owner.com	Mon Jan 11 2021 08:57:14
+81	owner@owner.com	Mon Jan 11 2021 09:00:08
 \.
 
 
@@ -399,7 +460,7 @@ COPY public.service (id_service, serv_name, cost) FROM stdin;
 -- Name: curr_service_id_crser_seq; Type: SEQUENCE SET; Schema: public; Owner: db_creator
 --
 
-SELECT pg_catalog.setval('public.curr_service_id_crser_seq', 38, true);
+SELECT pg_catalog.setval('public.curr_service_id_crser_seq', 63, true);
 
 
 --
@@ -413,7 +474,7 @@ SELECT pg_catalog.setval('public.data_login_id_user_seq', 1, true);
 -- Name: log_id_log_seq; Type: SEQUENCE SET; Schema: public; Owner: db_creator
 --
 
-SELECT pg_catalog.setval('public.log_id_log_seq', 15, true);
+SELECT pg_catalog.setval('public.log_id_log_seq', 81, true);
 
 
 --

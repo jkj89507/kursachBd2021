@@ -1,0 +1,38 @@
+{% extends "adindex.html" %}
+{% block content %}
+	{{ super() }}
+	<form method="post" action="http://127.0.0.1:5000/change/{{dict.id_user}}">
+		<div class="login col-md-12 col-xs-12">
+			<h2 class="col-md-4 col-xs-5">Name:</h2>
+			<input id="fname" class="col-md-5 col-xs-5" type="text" name="name" placeholder="Ivan" value="{{ dict.name }}" onchange="checkRight('fname','fname-ans', 'fname-ans', 'login-ans', 'phone-ans', 'repassword-ans')">
+			<h2 id="fname-ans" class="col-md-1"></h2>
+		</div>
+
+		<div class="login col-md-12 col-xs-12">
+			<h2 class="col-md-4 col-xs-5">E-mail:</h2>
+			<input id="login" class="col-md-5 col-xs-5" type="text" name="login" placeholder="inbox@inbox.su" value="{{ dict.email }}" onchange="checkRight('fname','fname-ans', 'fname-ans', 'login-ans', 'phone-ans', 'repassword-ans')">
+			<h2 id="login-ans" class="col-md-1"></h2>
+		</div>
+
+		<div class="login col-md-12 col-xs-12">
+			<h2 class="col-md-4 col-xs-5">Phone:</h2>
+			<input id="phone" class="col-md-5 col-xs-5" type="text" name="phone" value="{{ dict.phone }}" onchange="checkRight('fname','fname-ans', 'fname-ans', 'login-ans', 'phone-ans', 'repassword-ans')">
+			<h2 id="phone-ans" class="col-md-1"></h2>
+		</div>
+
+		<div class="password col-md-12 col-xs-12">
+			<h2 class="col-md-4 col-xs-5">Password:</h2>
+			<input id="password" class="col-md-5 col-xs-5" type="password" name="pass" value="{{dict.password}}">
+		</div>
+
+		<div class="password col-md-12 col-xs-12">
+			<h2 class="col-md-4 col-xs-5">Re-password:</h2>
+			<input id="repassword" class="col-md-5 col-xs-5" type="password" name="repass" onchange="checkPass('repassword', 'password', 'repassword-ans', 'fname-ans', 'login-ans', 'ncity-ans', 'repassword-ans')", value="{{dict.password}}">
+			<h2 id="repassword-ans" class="col-md-1"></h2>
+		</div>
+
+		<div class="btn col-md-3 col-md-offset-9 col-xs-4 col-xs-offset-7">
+			<input id= "bt" class="bt" type="submit" value="Change Info">
+		</div>
+	</form>
+{% endblock %}
