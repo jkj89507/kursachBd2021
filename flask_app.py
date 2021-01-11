@@ -1,5 +1,7 @@
 from flask import *
 from work_withBD import *
+from pullinfo import cipher, salt
+import hashlib
 import datetime
 import time
 
@@ -16,6 +18,7 @@ __total = 0
 now = 0
 curr_pg_user = 0
 curr_pg_st = 0
+i_counter = 1
 
 '''def checkLogin(login):
 	if login == "":
@@ -44,9 +47,9 @@ def login():
 @app.route('/validate', methods=["POST"])
 def validate():
 	if request.method == "POST":
-		global __nameUser, __mailUser, __b_dateUser, __b_placeUser, __mailUser, __passwordUser, __idUser, __total, __role, now, user
+		global __nameUser, __mailUser, __b_dateUser, __b_placeUser, __mailUser, __passwordUser, __idUser, __total, __role, now, user, i_counter
 		__mailUser = request.form.get("email")
-		__passwordUser = request.form.get("pass")
+		__passwordUser = hashlib.pbkdf2_hmac('sha256', request.form.get("pass").encode(), salt, 100000).hex()
 		answer = user.printCurrEl("data_login WHERE email={} AND password={}".format(addKav(__mailUser), addKav(__passwordUser)))
 		if  (len(answer) != 0):
 			__idUser = answer[0][2]
@@ -70,8 +73,9 @@ def validate():
 	
 @app.route('/add', methods=["POST"])
 def add():
-	answer = user.printCurrEl("bank_info WHERE id_user={}".format(__idUser))[0][1][-4:]
-	cardNum = "**** **** **** "+ str(answer) 
+	answer = (user.printCurrEl("bank_info WHERE id_user={}".format(__idUser), 'card_number'))[0]
+	answer = cipher.decrypt(answer[0].encode('utf-8')).decode('utf-8')
+	cardNum = "**** **** **** "+ str(answer)[-4:] 
 	answer = user.printCurrEl("info_user RIGHT JOIN info_work ON (info_user.name=info_work.name) WHERE info_user.id_user={}".format(__idUser),
 		"info_user.id_user, info_user.name, info_work.phone")
 	phone = answer[0][2]
@@ -147,8 +151,9 @@ def edit(id_user):
 
 @app.route('/order/<ordID>/<ordName>/<int:ordCost>', methods=["POST"])
 def order(ordID, ordName,ordCost):
-	answer = user.printCurrEl("bank_info WHERE id_user={}".format(__idUser))[0][1][-4:]
-	cardNum = "**** **** **** "+ str(answer) 
+	answer = (user.printCurrEl("bank_info WHERE id_user={}".format(__idUser), 'card_number'))[0]
+	answer = cipher.decrypt(answer[0].encode('utf-8')).decode('utf-8')
+	cardNum = "**** **** **** "+ str(answer)[-4:]  
 	answer = user.printCurrEl("info_user RIGHT JOIN info_work ON (info_user.name=info_work.name) WHERE info_user.id_user={}".format(__idUser),
 		"info_user.id_user, info_user.name, info_work.phone")
 	phone = answer[0][2]
@@ -286,7 +291,7 @@ def changeByAdmin(id_user):
 		nameUser = request.form.get("name")
 		mailUser = request.form.get("login")
 		phone = request.form.get("phone")
-		passwordUser = request.form.get("pass")
+		passwordUser = hashlib.pbkdf2_hmac('sha256', request.form.get("pass").encode(), salt, 100000).hex()
 		user.updateElTable("data_login", "id_user="+str(id_user), 
 								email=addKav(mailUser), password=addKav(passwordUser))
 		user.updateElTable("info_user", "id_user="+str(id_user), 
@@ -302,7 +307,7 @@ def change():
 	__mailUser = request.form.get("login")
 	__b_dateUser = "Mon" + " " + dictMounth[request.form.get("mounth")] + " " + request.form.get("day") + " " + request.form.get("year") + " " + "21:04:37"
 	__b_placeUser = request.form.get("ncity")
-	__passwordUser = request.form.get("pass")
+	__passwordUser = hashlib.pbkdf2_hmac('sha256', request.form.get("pass").encode(), salt, 100000).hex()
 	user.updateElTable("data_login", "id_user="+str(__idUser), 
 						email=addKav(__mailUser), password=addKav(__passwordUser))
 	user.updateElTable("info_user", "id_user="+str(__idUser), 

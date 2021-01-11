@@ -1,5 +1,12 @@
 import psycopg2
 import csv
+ 
+'''cipher_key = Fernet.generate_key()
+cipher = Fernet(cipher_key)
+text = (cipher.encrypt(bytes("23423Gewfe-", 'utf-8')))
+decrypted_text = cipher.decrypt(text)
+print(decrypted_text)
+'''
 
 class Control:
     def __init__(self, db_name, user_name, password, host, port):
@@ -35,7 +42,7 @@ class Control:
 
     def createElTable(self, nameTable: str, values: tuple):
         self.current.execute(
-            "INSERT INTO {} ({}) VALUES {}".format(nameTable, ", ".join(self.getTableColums(nameTable)[1:]), values))
+            "INSERT INTO {} ({}) VALUES {}".format(nameTable, ", ".join(self.getTableColums(nameTable)[1:]), values)) #for pullinfo change [1:] -> [0:] 
         self.connection.commit()
         
     def updateElTable(self, nameTable: str, condition: str, **kwargs):

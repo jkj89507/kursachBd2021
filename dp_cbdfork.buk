@@ -50,7 +50,7 @@ SET default_table_access_method = heap;
 
 CREATE TABLE public.bank_info (
     id_user integer,
-    card_number character varying(19),
+    card_number character varying(150),
     amount integer,
     CONSTRAINT bank_info_amount_check CHECK ((amount >= 0))
 );
@@ -101,7 +101,7 @@ ALTER SEQUENCE public.curr_service_id_crser_seq OWNED BY public.curr_service.id_
 
 CREATE TABLE public.data_login (
     email character varying(255) NOT NULL,
-    password character varying(32),
+    password character varying(80),
     id_user integer NOT NULL
 );
 
@@ -262,17 +262,17 @@ ALTER TABLE ONLY public.service ALTER COLUMN id_service SET DEFAULT nextval('pub
 --
 
 COPY public.bank_info (id_user, card_number, amount) FROM stdin;
-10	6352-8052-9633-6015	2971
-2	2388-7329-8436-8503	2227
-8	5762-8617-1068-7463	2397
-3	8412-0694-6147-8784	1615
-1	5936-4683-3586-4903	5400
-7	9375-8082-2287-2035	6241
-4	9475-1582-1745-2025	10972
-11	1111-1111-1111-1111	53623
-5	4366-9189-0650-3371	3259
-9	8491-7605-6703-3309	781
-6	5914-8818-6107-4327	2223
+1	gAAAAABf_MIcrMHKrXjUrtZ4JL2jrKwMfkazZOWnaPEYKNxorCYD1wuWsyJeoN2wTBmww2Q-fu9fWYG-ptAdCEmEkbuvxIVEo8NC_KT4ELJQBtO3QD04uCQ=	756
+2	gAAAAABf_MIc5BwF2HVBhmMPxMHyBoWl6Rq935sgnKWo6Qqm3c07-4Gkoua2JZTT8JA7Rk28THsMk14YAvhtgd3CIWNws2bJjVoZKIP78P8DCugnfF0-uNk=	543
+4	gAAAAABf_MIcYkf0_Hhr3rRU5tq3w6mj8eNVu22GCpSxz1e5HP3KzAyAuYWRZZMXkwxZyRJa81HZqMQVLlXUrx9D2Yzgv-8xXXSCSAINcjmi57MwFioCqD0=	46
+5	gAAAAABf_MIcu1xRqlk8CfXvpUbaMWtsG6nX5ws4Ylgvr-EZX9-0O3PHSORZ43hovmN90UcKlfcNaufwAgzjZlPlCBklYwariEvwiH8g2v4CKaGkR1k2J7k=	335
+6	gAAAAABf_MIcmUaV2GxNd05MUQMr7YWcnsfOchcQYBOs8we7ejzZc95zJ4H0oKXKQq4OfL-D6kyASqcZTZiwPn8jIw8QfMcd1RF283umyZbPQLQxXXuENXs=	155
+7	gAAAAABf_MIcEaucUzlsV-dGvwHW3-M3uwVoqydgwLQNvr7EyKmel8FQ_8rulF7fuAq-WKJ5jj4w8k8pCM4Z9X5POxlde-X5Nx3gFX0QlBdLs8wwfE0p2YU=	166
+8	gAAAAABf_MIcztqUVSxk0FY1fMmA3Ny7jONVdsZcM6DMf9M4OvzuIhWvK8-WMjJhmNaydh4ouQaW-UDokzcJZ4uVEFufnSrPktfPBCscPRJoT2LdK02MYng=	494
+9	gAAAAABf_MIcJ_xtCo7H2YJqeXYAUELSkzgcldQxrashh3eO1tpU823KgYtKFPIPxTB7cy5PtH9h0g5LRX5p2eqJJvl6n0O0yxCzToDQKJurqZoWXbRp0cU=	341
+10	gAAAAABf_MIcPTwXqe5r6mACzaJMWsnJ5WnR8y0sM3jC6fpWQsAKc_qnxABww_Js_bhNiDkpI75xF6lA_cxRgCQGCYv_2JnWSM2dU1PC30uE4vMA3YxfJEg=	10
+3	gAAAAABf_MIcn3qppo_rAcowWYN99A4LxlwYSsrtiaH1xbcc7ndGS5c3FSMN0xnWVcCUg_4TnZxzOZWesNiK_RR0YrkKDhA_dL5dm4v7XvFO3-ZL9gcZ4hs=	1742
+11	gAAAAABf_MIcEcfwsZO-U5MFqK8hrrDuo8VLV8REWfN_WfFyEJIZYs1V3gueAaf0EG8UeMwOqceOGdFsbBSxj2BLz__MUyGHvU04sr330AtzOz_OEhXT2_c=	62121
 \.
 
 
@@ -281,9 +281,8 @@ COPY public.bank_info (id_user, card_number, amount) FROM stdin;
 --
 
 COPY public.curr_service (id_crser, id_user, curr_service, curr_time, status) FROM stdin;
-3	4	Replacing spark plugs	Sat Jan 09 2021 02:12:22	t
-47	2	Oil change	Mon Jan 11 2021 07:41:56	t
-4	4	Resetting service interva	Sat Jan 09 2021 02:13:07	t
+70	3	Replacing spark plugs	Tue Jan 12 2021 00:31:37	f
+71	3	Replacing the coolant	Tue Jan 12 2021 00:31:45	t
 \.
 
 
@@ -292,17 +291,17 @@ COPY public.curr_service (id_crser, id_user, curr_service, curr_time, status) FR
 --
 
 COPY public.data_login (email, password, id_user) FROM stdin;
-Jordyn50@gmail.com	ZllCNCCl5uJ_Xwg	3
-Lynn.Bauch@hotmail.com	ReAiXYcdvXb7STi	6
-Rylan.Franecki89@yahoo.com	2N4_PqWAq4Iy14b	7
-Edmund30@gmail.com	97QvHQSUznoDGMs	8
-Justen81@yahoo.com	2G6az_l6nA2Gpb9	9
-Raven75@hotmail.com	aDmhM5TCzJtvm1B	10
-Deoste89@mail.com	dsvsdv3456	5
-Tanner11@mailhot.com	PeeB3vkGFqt1e9X	2
-owner@owner.com	RVrevsrd2391	11
-Janet.Wiegan419@hotmail.com	vAtLRrkVB1BkZGw	4
-Mralen41@gmail.com	eRtger456234	1
+Marlen30@gmail.com	1c3703cfb79fc7eb9555ad7cf41a668115b6dabce3d2734064bc0339716664dc	1
+Tanner10@hotmail.com	4914bfaaec86e968bd083b9246f1ba197cbda27915bfd9d01e942aea9b0db83c	2
+Jordyn50@gmail.com	7161648c3a4d9dc2ec374c94e49d57c07db50cb5f0a0838aad5f454c00a6494d	3
+Janet.Wiegand39@hotmail.com	173fcd37006d3fc22bded395eb7d470bdac324992110d817e7e3a16410dc73c5	4
+Deontae78@gmail.com	06d685c015b12d2ac6e4fb5ff66a3d58223b01f76e419a52a7ab293a7b7e0d62	5
+Lynn.Bauch@hotmail.com	5b0a68c621ae3ab8e62b34092a1c76fafd6c3e41b886bdeb752a031899aebd7d	6
+Rylan.Franecki89@yahoo.com	3de68c65c92016f9fdf3089faf5e2641d5e4a76be9b151bd082cbcbce42b01da	7
+Edmund30@gmail.com	ecc38d6c73971b0aa46e90d34000b80b0f9c1c280c86c9d33a3ebfd51b799b36	8
+Justen81@yahoo.com	f012089c5a6394bb8d84e1bd86f3d4f4dbbe016f8021684c2b44b63467a9470e	9
+Raven75@hotmail.com	de2075af332a34fdb8312c34db54d3dbf10d0b1e3cbd6739fa9e83086069b206	10
+owner@owner.com	9b392beab71158c6d325a637a93218bfc9d237bd4f1a2138700805eb4a8bb1c1	11
 \.
 
 
@@ -311,17 +310,17 @@ Mralen41@gmail.com	eRtger456234	1
 --
 
 COPY public.info_user (id_user, name, home_place, b_date, role) FROM stdin;
+1	Aaliyah Anderson	Saint Kitts and Nevis Vincenzaton 18941 Ellen Heights Kaya Plain Apt. 607	Fri Sep 14 1934 21:04:37 	user
+2	Aaliyah Beier	Ireland West Patiencebury 3241 Kertzmann Crossroad Jewell Shores Apt. 925	Tue Dec 31 1935 04:05:16 	user
 3	Aaliyah Botsford	Libyan Arab Jamahiriya New Waylontown 59315 Bartoletti Islands Gaylord Cliff Apt. 201	Mon Mar 09 1970 11:41:44 	user
+4	Aaliyah Brakus	Saudi Arabia South Margie 66523 Robel Trace Stracke Expressway Suite 909	Mon Jul 05 1937 05:04:22 	user
+5	Aaliyah Corwin	French Guiana Deonbury 48643 Thad Port Ariane Rapid Apt. 577	Mon May 03 1982 02:52:55 	user
 6	Aaliyah Dietrich	Turkmenistan Port Cristian 1948 Zboncak Point Grimes Drive Suite 518	Wed Apr 19 1967 14:24:36 	user
 7	Aaliyah Doyle	Greenland East Violabury 24825 Blanda Gateway Hulda Grove Suite 986	Tue Jun 26 1956 11:38:49 	user
 8	Aaliyah Gibson	Costa Rica Leannafurt 1328 Preston Causeway Langosh Via Suite 123	Tue Oct 10 1995 19:29:10 	user
 9	Aaliyah Gislason	Saint Vincent and the Grenadines Jameltown 17908 Guido Groves Demarco Stream Suite 815	Mon Dec 08 1958 05:45:42 	user
 10	Aaliyah Glover	Tokelau Violabury 995 Jocelyn Summit Lesch Islands Suite 620	Sun Feb 13 1949 20:42:29 	user
-5	Aliah Barowin	French Guiana Paris Apakra street 5b	Mon Jan 1 1930 21:04:37	user
-2	Aaliyah Veiber	Ireland West Patiencebury 3241 Kertzmann Crossroad Jewell Shores Apt. 925	Mon Jun 15 1977 21:04:37	user
-11	Sergey Davididov	RF Mari El Yoshkar-Ola Volkova 149 Apt. 149	Sun Aug 27 1986 23:14:25	owner
-4	Aaliyah Braker	Saudi Arabia South Margie 6523 Robel Trace Stracke Expressway Suite 909	Mon Oct 8 1954 21:04:37	user
-1	Bananer Ananas	Saint Kitts and Nevis Vincenzaton 18941 Ellen Heights Kaya Plain Apt. 607	Mon Jun 1 1958 21:04:37	user
+11	Sergey Davidov	RF Mari El Volkova apt.149	Mon Aug 27 1989 21:33:33	owner
 \.
 
 
@@ -330,16 +329,17 @@ COPY public.info_user (id_user, name, home_place, b_date, role) FROM stdin;
 --
 
 COPY public.info_work (name, phone, work_place) FROM stdin;
+Aaliyah Anderson	1-430-166-8115	Jast LLC
+Aaliyah Beier	635.613.4207 x5421	Moen and Sons
 Aaliyah Botsford	109.871.6464 x7498	Pfannerstill - Watsica
+Aaliyah Brakus	699-162-6413 x6702	Welch
+Aaliyah Corwin	427.182.1660	Trantow
 Aaliyah Dietrich	317-698-4916 x2735	Zboncak
 Aaliyah Doyle	1-812-092-7813 x7775	Wunsch
 Aaliyah Gibson	836-117-6756	Abshire - Reilly
 Aaliyah Gislason	254-716-1755 x5687	Sauer Group
 Aaliyah Glover	(547) 511-9002	Schneider
-Aliah Barowin	427.182.1660	Trantow
-Aaliyah Veiber	635.613.4207 x5421	Moen and Sons
-Aaliyah Braker	699-162-6413 x6702	Welch
-Bananer Ananas	3-530-177-8225	Jast LLC
+Sergey Davidov	 8(800)555-35-35	Gofast
 \.
 
 
@@ -348,87 +348,10 @@ Bananer Ananas	3-530-177-8225	Jast LLC
 --
 
 COPY public.log (id_log, email, date_log) FROM stdin;
-1	Jordyn50@gmail.com	Sat Jan 09 2021 06:03:39
-2	owner@owner.com	Sun Jan 10 2021 03:24:17
-3	owner@owner.com	Sun Jan 10 2021 03:28:53
-4	owner@owner.com	Sun Jan 10 2021 03:50:19
-5	owner@owner.com	Sun Jan 10 2021 03:51:57
-6	owner@owner.com	Sun Jan 10 2021 03:57:13
-7	owner@owner.com	Sun Jan 10 2021 03:58:15
-8	owner@owner.com	Sun Jan 10 2021 04:05:16
-9	Tanner11@mailhot.com	Sun Jan 10 2021 04:07:23
-10	owner@owner.com	Sun Jan 10 2021 04:08:00
-11	owner@owner.com	Sun Jan 10 2021 04:10:22
-12	owner@owner.com	Sun Jan 10 2021 04:26:45
-13	owner@owner.com	Sun Jan 10 2021 04:42:06
-14	owner@owner.com	Sun Jan 10 2021 06:17:31
-15	owner@owner.com	Sun Jan 10 2021 06:18:52
-16	Janet.Wiegan419@hotmail.com	Sun Jan 10 2021 22:21:28
-17	owner@owner.com	Sun Jan 10 2021 22:25:55
-18	Jordyn50@gmail.com	Sun Jan 10 2021 22:50:10
-19	owner@owner.com	Sun Jan 10 2021 22:50:38
-20	owner@owner.com	Mon Jan 11 2021 00:15:50
-21	owner@owner.com	Mon Jan 11 2021 00:22:02
-22	owner@owner.com	Mon Jan 11 2021 00:25:04
-23	owner@owner.com	Mon Jan 11 2021 00:26:05
-24	owner@owner.com	Mon Jan 11 2021 00:27:57
-25	owner@owner.com	Mon Jan 11 2021 00:28:58
-26	owner@owner.com	Mon Jan 11 2021 01:02:27
-27	owner@owner.com	Mon Jan 11 2021 01:04:49
-28	owner@owner.com	Mon Jan 11 2021 01:12:45
-29	owner@owner.com	Mon Jan 11 2021 01:21:57
-30	owner@owner.com	Mon Jan 11 2021 02:03:49
-31	owner@owner.com	Mon Jan 11 2021 02:11:19
-32	owner@owner.com	Mon Jan 11 2021 02:14:29
-33	owner@owner.com	Mon Jan 11 2021 02:19:41
-34	owner@owner.com	Mon Jan 11 2021 02:20:47
-35	owner@owner.com	Mon Jan 11 2021 02:26:34
-36	owner@owner.com	Mon Jan 11 2021 02:29:29
-37	owner@owner.com	Mon Jan 11 2021 02:33:39
-38	owner@owner.com	Mon Jan 11 2021 02:44:54
-39	owner@owner.com	Mon Jan 11 2021 02:49:01
-40	owner@owner.com	Mon Jan 11 2021 03:08:45
-41	owner@owner.com	Mon Jan 11 2021 03:15:07
-42	owner@owner.com	Mon Jan 11 2021 03:20:41
-43	owner@owner.com	Mon Jan 11 2021 03:28:10
-44	owner@owner.com	Mon Jan 11 2021 03:29:03
-45	owner@owner.com	Mon Jan 11 2021 03:45:23
-46	owner@owner.com	Mon Jan 11 2021 03:46:19
-47	owner@owner.com	Mon Jan 11 2021 03:48:32
-48	owner@owner.com	Mon Jan 11 2021 03:51:16
-49	owner@owner.com	Mon Jan 11 2021 04:03:46
-50	owner@owner.com	Mon Jan 11 2021 04:21:45
-51	owner@owner.com	Mon Jan 11 2021 04:24:04
-52	owner@owner.com	Mon Jan 11 2021 04:29:52
-53	owner@owner.com	Mon Jan 11 2021 05:04:34
-54	owner@owner.com	Mon Jan 11 2021 05:36:25
-55	owner@owner.com	Mon Jan 11 2021 05:38:29
-56	owner@owner.com	Mon Jan 11 2021 05:43:45
-57	owner@owner.com	Mon Jan 11 2021 06:49:22
-58	owner@owner.com	Mon Jan 11 2021 07:03:23
-59	owner@owner.com	Mon Jan 11 2021 07:05:41
-60	owner@owner.com	Mon Jan 11 2021 07:14:17
-61	owner@owner.com	Mon Jan 11 2021 07:16:35
-62	owner@owner.com	Mon Jan 11 2021 07:18:28
-63	owner@owner.com	Mon Jan 11 2021 07:37:59
-64	owner@owner.com	Mon Jan 11 2021 07:39:17
-65	Tanner11@mailhot.com	Mon Jan 11 2021 07:41:20
-66	Rylan.Franecki89@yahoo.com	Mon Jan 11 2021 07:52:56
-67	owner@owner.com	Mon Jan 11 2021 07:54:06
-68	Edmund30@gmail.com	Mon Jan 11 2021 07:59:47
-69	owner@owner.com	Mon Jan 11 2021 08:01:02
-70	Mralen41@gmail.com	Mon Jan 11 2021 08:03:34
-71	owner@owner.com	Mon Jan 11 2021 08:04:45
-72	Janet.Wiegan419@hotmail.com	Mon Jan 11 2021 08:11:08
-73	owner@owner.com	Mon Jan 11 2021 08:11:59
-74	owner@owner.com	Mon Jan 11 2021 08:21:08
-75	owner@owner.com	Mon Jan 11 2021 08:34:06
-76	owner@owner.com	Mon Jan 11 2021 08:36:56
-77	owner@owner.com	Mon Jan 11 2021 08:38:03
-78	owner@owner.com	Mon Jan 11 2021 08:39:30
-79	owner@owner.com	Mon Jan 11 2021 08:40:51
-80	owner@owner.com	Mon Jan 11 2021 08:57:14
-81	owner@owner.com	Mon Jan 11 2021 09:00:08
+91	owner@owner.com	Tue Jan 12 2021 00:27:28
+92	Jordyn50@gmail.com	Tue Jan 12 2021 00:31:16
+93	owner@owner.com	Tue Jan 12 2021 00:32:20
+94	Jordyn50@gmail.com	Tue Jan 12 2021 00:32:59
 \.
 
 
@@ -460,7 +383,7 @@ COPY public.service (id_service, serv_name, cost) FROM stdin;
 -- Name: curr_service_id_crser_seq; Type: SEQUENCE SET; Schema: public; Owner: db_creator
 --
 
-SELECT pg_catalog.setval('public.curr_service_id_crser_seq', 63, true);
+SELECT pg_catalog.setval('public.curr_service_id_crser_seq', 72, true);
 
 
 --
@@ -474,7 +397,7 @@ SELECT pg_catalog.setval('public.data_login_id_user_seq', 1, true);
 -- Name: log_id_log_seq; Type: SEQUENCE SET; Schema: public; Owner: db_creator
 --
 
-SELECT pg_catalog.setval('public.log_id_log_seq', 81, true);
+SELECT pg_catalog.setval('public.log_id_log_seq', 94, true);
 
 
 --
