@@ -1,11 +1,12 @@
 from flask import *
-from work_withBD import *
+import psycopg2
 from pullinfo import cipher, salt
 import hashlib
 import datetime
 import time
 
-user = Control("main", "db_creator", "12345Q", "localhost", 5432)
+user = psycopg2.connect(database="main", user="db_creator", password="12345Q", host="localhost",port= 5432)
+cursor = user.cursor()
 app = Flask(__name__)
 __nameUser = ""
 __b_dateUser = ""
@@ -47,38 +48,70 @@ def login():
 @app.route('/validate', methods=["POST"])
 def validate():
 	if request.method == "POST":
-		global __nameUser, __mailUser, __b_dateUser, __b_placeUser, __mailUser, __passwordUser, __idUser, __total, __role, now, user, i_counter
+		global __nameUser, __mailUser, __b_dateUser, __b_placeUser, __mailUser, __passwordUser
+		global __idUser, __total, __role, now, user, i_counter
+
 		__mailUser = request.form.get("email")
 		__passwordUser = hashlib.pbkdf2_hmac('sha256', request.form.get("pass").encode(), salt, 100000).hex()
-		answer = user.printCurrEl("data_login WHERE email={} AND password={}".format(addKav(__mailUser), addKav(__passwordUser)))
+
+		cursor.execute("""SELECT * 
+							FROM data_login 
+							WHERE email=%s AND password=%s """, (__mailUser, __passwordUser))
+		answer = cursor.fetchall()
+
 		if  (len(answer) != 0):
 			__idUser = answer[0][2]
-			answer = user.printCurrEl("info_user WHERE id_user={}".format(__idUser))[0]
+
+			cursor.execute("""SELECT * 
+								FROM info_user 
+								WHERE id_user= %s""", 
+								([__idUser]))
+			answer = cursor.fetchall()[0]
+
 			__nameUser = answer[1]
 			__b_placeUser= answer[2]
 			__b_dateUser = answer[3]
 			__role = answer[4]
-			answer = user.printCurrEl("bank_info WHERE id_user={}".format(__idUser))[0]
+
+			cursor.execute("""SELECT * 
+								FROM bank_info WHERE id_user= %s""", 
+								([__idUser]))
+			answer = cursor.fetchall()[0]
+
 			__total = answer[2]
 			now = getTime()
 			mt = dictMounth[str(now.month)]
 			day = dictDay[str(now.weekday())]
 
-
-			user.createElTable("log", (__mailUser, now.strftime("{} {} %d %Y %H:%M:%S").format(day, mt)))
+			cursor.execute("""INSERT INTO log (email, date_log)
+								VALUES (%s, %s)""", 
+								(__mailUser, now.strftime("{} {} %d %Y %H:%M:%S").format(day, mt)))
+			user.commit()
 			if __role == "owner": 
-				user = Control("main", "head", "123456W", "localhost", 5432)
+				user = psycopg2.connect(database="main", user="head", password="123456W", host="localhost",port=5432)
 			return redirect(url_for('indexer'))
 		else: return redirect(url_for('login'))
 	
 @app.route('/add', methods=["POST"])
 def add():
-	answer = (user.printCurrEl("bank_info WHERE id_user={}".format(__idUser), 'card_number'))[0]
+	user = psycopg2.connect(database="main", user="db_creator", password="12345Q", host="localhost",port= 5432)
+	cursor = user.cursor()
+	cursor.execute("""SELECT card_number
+						FROM bank_info 
+						WHERE id_user= %s""", 
+						([__idUser]))
+	answer = cursor.fetchall()[0]
+
 	answer = cipher.decrypt(answer[0].encode('utf-8')).decode('utf-8')
-	cardNum = "**** **** **** "+ str(answer)[-4:] 
-	answer = user.printCurrEl("info_user RIGHT JOIN info_work ON (info_user.name=info_work.name) WHERE info_user.id_user={}".format(__idUser),
-		"info_user.id_user, info_user.name, info_work.phone")
-	phone = answer[0][2]
+	cardNum = "**** **** **** "+ str(answer)[-4:]
+
+	cursor.execute("""SELECT info_user.id_user, info_user.name, info_work.phone 
+						FROM info_user RIGHT JOIN  info_work ON (info_user.name=info_work.name) 
+						WHERE info_user.id_user= %s""", 
+						([__idUser]))
+	answer = cursor.fetchall()[0] 
+	
+	phone = answer[2]
 	return render_template("addbalance.html", name=__nameUser, 
 							login=__mailUser, b_date=__b_dateUser, 
 							b_place=__b_placeUser, money=__total, 
@@ -88,10 +121,22 @@ def add():
 def up():
 	global __total
 	addbalance = request.form.get("add")
-	__total = __total + int(addbalance)							
-	user.updateElTable("bank_info", "id_user={}".format(__idUser), 
-									amount=str(__total))
-	user.deleteElTable("curr_service", "curr_service IS NULL AND curr_time IS NULL")
+	__total = __total + int(addbalance)
+
+	user = psycopg2.connect(database="main", user="db_creator", password="12345Q", host="localhost",port= 5432)
+	cursor = user.cursor()
+
+	cursor.execute("""UPDATE bank_info 
+						SET amount=%s 
+						WHERE id_user= %s""", 
+						(__total ,__idUser))
+	user.commit()
+
+	user = psycopg2.connect(database="main", user="db_creator", password="12345Q", host="localhost",port=5432)
+	cursor = user.cursor()
+
+	cursor.execute("""DELETE FROM curr_service WHERE (curr_service IS NULL) AND (curr_time IS NULL)""")
+	user.commit()
 	return redirect(url_for('indexer'))
 
 
@@ -113,9 +158,19 @@ def next():
 @app.route('/account', methods=["POST", "GET"])
 def account():
 	if __role == "owner":
-		dictServ = [] 
-		answer = user.printCurrEl("data_login RIGHT JOIN info_user ON (data_login.id_user=info_user.id_user) RIGHT JOIN info_work ON (info_work.name = info_user.name)",
-						"data_login.id_user, info_user.name, info_work.phone, data_login.email, data_login.password", "id_user", 5, curr_pg_user)
+		dictServ = []
+		user = psycopg2.connect(database="main", user="head", password="123456W", host="localhost",port=5432)
+		cursor = user.cursor()
+
+		cursor.execute("""SELECT data_login.id_user, info_user.name, info_work.phone, data_login.email, data_login.password
+							FROM data_login 
+							RIGHT JOIN info_user ON (data_login.id_user=info_user.id_user) 
+							RIGHT JOIN info_work ON (info_work.name = info_user.name)
+							ORDER BY id_user
+							LIMIT 5
+							OFFSET %s
+						""", ([curr_pg_user]))
+		answer = cursor.fetchall()
 		for i in answer:
 			helpDict = {}
 			helpDict["id_user"] = int(i[0])
@@ -137,8 +192,16 @@ def account():
 
 @app.route('/edit/<id_user>', methods=["POST"])
 def edit(id_user):
-	answer = user.printCurrEl("data_login RIGHT JOIN info_user ON (data_login.id_user=info_user.id_user) RIGHT JOIN info_work ON (info_work.name = info_user.name) WHERE data_login.id_user={}".format(id_user),
-						"data_login.id_user, info_user.name, info_work.phone, data_login.email, data_login.password", "id_user")[0]
+	user = psycopg2.connect(database="main", user="db_creator", password="12345Q", host="localhost",port= 5432)
+	cursor = user.cursor()
+
+	cursor.execute("""SELECT data_login.id_user, info_user.name, info_work.phone, data_login.email, data_login.password
+						FROM data_login 
+						RIGHT JOIN info_user ON (data_login.id_user=info_user.id_user) 
+						RIGHT JOIN info_work ON (info_work.name = info_user.name)
+						WHERE data_login.id_user=%s""",
+						([id_user]))
+	answer = cursor.fetchall()[0]
 	helpDict = {}
 	helpDict["id_user"] = int(answer[0])
 	helpDict["name"] = answer[1]
@@ -151,12 +214,24 @@ def edit(id_user):
 
 @app.route('/order/<ordID>/<ordName>/<int:ordCost>', methods=["POST"])
 def order(ordID, ordName,ordCost):
-	answer = (user.printCurrEl("bank_info WHERE id_user={}".format(__idUser), 'card_number'))[0]
+	user = psycopg2.connect(database="main", user="db_creator", password="12345Q", host="localhost",port= 5432)
+	cursor = user.cursor()
+
+	cursor.execute("""SELECT card_number
+						FROM bank_info
+						WHERE id_user = %s""",
+						([__idUser]))
+	answer = cursor.fetchall()[0]
 	answer = cipher.decrypt(answer[0].encode('utf-8')).decode('utf-8')
-	cardNum = "**** **** **** "+ str(answer)[-4:]  
-	answer = user.printCurrEl("info_user RIGHT JOIN info_work ON (info_user.name=info_work.name) WHERE info_user.id_user={}".format(__idUser),
-		"info_user.id_user, info_user.name, info_work.phone")
-	phone = answer[0][2]
+	cardNum = "**** **** **** "+ str(answer)[-4:]
+
+	cursor.execute("""SELECT info_user.id_user, info_user.name, info_work.phone
+						FROM info_user 
+						RIGHT JOIN info_work ON (info_user.name=info_work.name) 
+						WHERE info_user.id_user=%s""",
+						([__idUser]))  
+	answer = cursor.fetchall()[0]
+	phone = answer[2]
 	return render_template("order.html", name=__nameUser, 
 							login=__mailUser, b_date=__b_dateUser, 
 							b_place=__b_placeUser, order=ordName, 
@@ -168,19 +243,42 @@ def order(ordID, ordName,ordCost):
 def pay(ordCost, ordName):
 	global __total, now
 	__total = __total - ordCost
-	user.updateElTable("bank_info", "id_user={}".format(__idUser), 
-									amount=str(__total))
+
+	user = psycopg2.connect(database="main", user="db_creator", password="12345Q", host="localhost",port= 5432)
+	cursor = user.cursor()
+	cursor.execute("""UPDATE bank_info 
+						SET amount=%s
+						WHERE id_user=%s""",
+						(__total, __idUser))
+	user.commit()
+
 	now = getTime()
 	mt = dictMounth[str(now.month)]
 	day = dictDay[str(now.weekday())]
-	user.updateElTable("curr_service", "id_user={} AND curr_service IS NULL AND curr_time IS NULL".format(__idUser), 
-						curr_service=addKav(ordName), curr_time=addKav(now.strftime("{} {} %d %Y %H:%M:%S").format(day, mt)))
+
+	user = psycopg2.connect(database="main", user="db_creator", password="12345Q", host="localhost",port= 5432)
+	cursor = user.cursor()
+	cursor.execute("""UPDATE curr_service 
+						SET curr_service=%s,curr_time=%s
+						WHERE id_user=%s AND curr_service IS NULL AND curr_time IS NULL""",
+						(ordName, now.strftime("{} {} %d %Y %H:%M:%S").format(day, mt),(__idUser)))
+	user.commit()
 	return redirect(url_for('indexer'))
 
 @app.route('/status', methods=["POST", "GET"])
 def status():
 	dictServ = []
-	for i in (i for i in user.printCurrEl("curr_service WHERE id_user={}".format(__idUser), "*", "curr_time DESC")):
+
+	user = psycopg2.connect(database="main", user="db_creator", password="12345Q", host="localhost",port= 5432)
+	cursor = user.cursor()
+	cursor.execute("""SELECT *
+						FROM curr_service
+						WHERE id_user=%s
+						ORDER BY curr_time DESC""",
+						([__idUser]))
+
+	answer = cursor.fetchall()
+	for i in (i for i in answer):
 		helpDict = {}
 		helpDict["id_user"] = int (i[1])
 		helpDict["curr_service"] = i[2]
@@ -197,13 +295,36 @@ def status():
 def  done (idUser, ordName, ordDate):
 	global __total
 	if __role == "owner":
-		answer = user.printCurrEl("curr_service RIGHT JOIN service ON (curr_service.curr_service = service.serv_name) WHERE id_user = {} AND curr_time = {} AND curr_service = {}".format(idUser, addKav(ordDate), addKav(ordName)),
-			"curr_service, curr_time, service.cost")[0]
+		user = psycopg2.connect(database="main", user="head", password="123456W", host="localhost",port=5432)
+		cursor = user.cursor()
+		cursor.execute("""SELECT curr_service, curr_time, service.cost
+							FROM curr_service 
+							RIGHT JOIN service ON (curr_service.curr_service = service.serv_name) 
+							WHERE id_user = %s AND curr_time LIKE %s AND curr_service LIKE %s""",
+							(idUser, ordDate, ordName))
+		answer = cursor.fetchall()[0]
 		plus = answer[2]
-		user.updateElTable("curr_service", "id_user={} AND curr_time={} AND curr_service={}".format(idUser, addKav(ordDate), addKav(ordName)), status=addKav('TRUE'))
+
+		cursor.execute("""UPDATE curr_service
+							SET status=%s
+							WHERE id_user=%s AND curr_time LIKE %s AND curr_service LIKE %s""",
+							(True, idUser, ordDate,ordName))
+		user.commit()
 		__total += plus
-		user.updateElTable("bank_info", "id_user={}".format(__idUser), amount=str(__total))
-		user.deleteElTable("curr_service", "curr_service IS NULL AND curr_time IS NULL")
+		user = psycopg2.connect(database="main", user="head", password="123456W", host="localhost",port=5432)
+		cursor = user.cursor()
+		cursor.execute("""UPDATE bank_info
+							SET amount=%s
+							WHERE id_user=%s""",
+							(__total, __idUser))
+		user.commit()
+
+		user = psycopg2.connect(database="main", user="head", password="123456W", host="localhost",port=5432)
+		cursor = user.cursor()
+		cursor.execute("""DELETE FROM curr_service
+							WHERE curr_service IS NULL AND curr_time IS NULL""")
+		user.commit()
+
 		return redirect(url_for('service'))
 
 
@@ -211,26 +332,72 @@ def  done (idUser, ordName, ordDate):
 def  canceler (idUser, ordName, ordDate):
 	global __total
 	if __role == "owner":
-		answer = user.printCurrEl("curr_service RIGHT JOIN service ON (curr_service.curr_service = service.serv_name) WHERE id_user = {} AND curr_time = {} AND curr_service = {}".format(idUser, addKav(ordDate), addKav(ordName)),
-			"curr_service, curr_time, service.cost")[0]
+		user = psycopg2.connect(database="main", user="head", password="123456W", host="localhost",port=5432)
+		cursor = user.cursor()
+		cursor.execute("""SELECT curr_service, curr_time, service.cost
+							FROM curr_service 
+							RIGHT JOIN service ON (curr_service.curr_service = service.serv_name) 
+							WHERE id_user = %s AND curr_time LIKE %s AND curr_service LIKE %s""",
+							(idUser, ordDate, ordName))
+		answer = cursor.fetchall()[0]
 		minus = answer[2]
-		user.deleteElTable("curr_service", "id_user={} AND curr_time={} AND curr_service={}".format(idUser, addKav(ordDate), addKav(ordName)))
-		answer = user.printCurrEl("bank_info WHERE id_user={}".format(idUser))[0]
+
+		user = psycopg2.connect(database="main", user="head", password="123456W", host="localhost",port=5432)
+		cursor = user.cursor()
+		cursor.execute("""DELETE FROM curr_service
+							WHERE id_user=%s AND curr_time LIKE %s AND curr_service LIKE %s""",
+							(idUser, ordDate, ordName))
+		user.commit()
+
+		user = psycopg2.connect(database="main", user="head", password="123456W", host="localhost",port=5432)
+		cursor = user.cursor()
+		cursor.execute("""SELECT *
+							FROM bank_info
+							WHERE id_user=%s""",
+							([idUser]))
+		answer = cursor.fetchall()[0]
+	
 		summ = answer[2] + minus
-		user.updateElTable("bank_info", "id_user={}".format(idUser), amount=str(summ))
-		user.deleteElTable("curr_service", "curr_service IS NULL AND curr_time IS NULL")
+
+		cursor.execute("""UPDATE bank_info
+							SET amount=%s
+							WHERE id_user=%s""",
+							(summ, idUser))
+		user.commit()
+
+		cursor.execute("""DELETE FROM curr_service
+							WHERE curr_service IS NULL AND curr_time IS NULL""")
+		user.commit()
+
 		return redirect(url_for('service'))
 
 @app.route('/cancel/<ordName>/<ordDate>', methods=["POST"])
 def  cancel(ordName, ordDate):
 	global __total
-
-	answer = user.printCurrEl("curr_service RIGHT JOIN service ON (curr_service.curr_service = service.serv_name) WHERE id_user = {} AND curr_time = {} AND curr_service = {}".format(__idUser, addKav(ordDate), addKav(ordName)),
-		"curr_service, curr_time, service.cost")[0]
+	user = psycopg2.connect(database="main", user="db_creator", password="12345Q", host="localhost",port= 5432)
+	cursor = user.cursor()
+	cursor.execute("""SELECT curr_service, curr_time, service.cost
+						FROM curr_service 
+						RIGHT JOIN service ON (curr_service.curr_service = service.serv_name)
+						WHERE id_user = %s AND curr_time LIKE %s AND curr_service LIKE %s""",
+						(__idUser, ordDate, ordName))
+	answer = cursor.fetchall()[0]
 	__total += answer[2]
-	user.deleteElTable("curr_service", "id_user={} AND curr_time={} AND curr_service={}".format(__idUser, addKav(ordDate), addKav(ordName)))
-	user.updateElTable("bank_info", "id_user={}".format(__idUser), amount=str(__total))
-	user.deleteElTable("curr_service", "curr_service IS NULL AND curr_time IS NULL")
+	cursor.execute("""DELETE FROM curr_service
+							WHERE id_user=%s AND curr_time LIKE %s AND curr_service LIKE %s""",
+							(__idUser, ordDate, ordName))
+
+	user.commit()
+	cursor.execute("""UPDATE bank_info
+							SET amount=%s
+							WHERE id_user=%s""",
+							(__total, __idUser))
+	user.commit()
+
+	cursor.execute("""DELETE FROM curr_service
+							WHERE curr_service IS NULL AND curr_time IS NULL""")
+	user.commit()
+
 	return redirect(url_for('service'))
 
 @app.route('/about', methods=["POST"])
@@ -256,9 +423,20 @@ def nextPg():
 def service():
 	dictServ = []
 	if __role == "owner":
-		for i in (i for i in user.printCurrEl("curr_service RIGHT JOIN info_user ON (curr_service.id_user = info_user.id_user) RIGHT JOIN service ON (curr_service.curr_service = service.serv_name) WHERE curr_service.curr_service IS NOT NULL", 
-											"curr_service.id_user, info_user.name ,curr_service.curr_service, curr_service.curr_time, service.cost, curr_service.status",
-											 "curr_service.curr_time DESC", 5, curr_pg_st)):	
+		user = psycopg2.connect(database="main", user="head", password="123456W", host="localhost",port=5432)
+		cursor = user.cursor()
+		cursor.execute("""SELECT curr_service.id_user, info_user.name ,curr_service.curr_service, 
+								curr_service.curr_time, service.cost, curr_service.status
+							FROM curr_service 
+							RIGHT JOIN info_user ON (curr_service.id_user = info_user.id_user) 
+							RIGHT JOIN service ON (curr_service.curr_service = service.serv_name) 
+							WHERE curr_service.curr_service IS NOT NULL
+							ORDER BY curr_service.curr_time DESC
+							LIMIT 5
+							OFFSET %s""",
+							([curr_pg_st]))
+		answer = cursor.fetchall()
+		for i in (i for i in answer):	
 			helpDict = {}
 			helpDict["id_user"] = int(i[0])
 			helpDict["name"] = i[1]
@@ -273,7 +451,12 @@ def service():
 								 b_date=__b_dateUser, b_place=__b_placeUser, 
 								 dict=dictServ, money=__total, cpg=int(curr_pg_st/5)+1)
 	else:
-		for i in (i for i in user.printEl("service")):
+		user = psycopg2.connect(database="main", user="db_creator", password="12345Q", host="localhost",port= 5432)
+		cursor = user.cursor()
+		cursor.execute("""SELECT *
+							FROM service""")
+		answer = cursor.fetchall()
+		for i in (i for i in answer):
 			if __total >= int(i[2]):
 				helpDict = {}
 				helpDict["id"] = int (i[0])
@@ -292,12 +475,30 @@ def changeByAdmin(id_user):
 		mailUser = request.form.get("login")
 		phone = request.form.get("phone")
 		passwordUser = hashlib.pbkdf2_hmac('sha256', request.form.get("pass").encode(), salt, 100000).hex()
-		user.updateElTable("data_login", "id_user="+str(id_user), 
-								email=addKav(mailUser), password=addKav(passwordUser))
-		user.updateElTable("info_user", "id_user="+str(id_user), 
-								name=addKav(nameUser))
-		user.updateElTable("info_work", "name={}".format(addKav(nameUser)),
-								phone=addKav(phone))
+
+		user = psycopg2.connect(database="main", user="head", password="123456W", host="localhost",port=5432)
+		cursor = user.cursor()
+		cursor.execute("""UPDATE data_login
+							SET email=%s, password=%s
+							WHERE id_user=%s""",
+							(mailUser, passwordUser, id_user))
+		user.commit()
+
+		user = psycopg2.connect(database="main", user="head", password="123456W", host="localhost",port=5432)
+		cursor = user.cursor()
+		cursor.execute("""UPDATE info_user
+							SET name=%s
+							WHERE id_user=%s""",
+							(nameUser, id_user))
+		user.commit()
+
+		user = psycopg2.connect(database="main", user="head", password="123456W", host="localhost",port=5432)
+		cursor = user.cursor()
+		cursor.execute("""UPDATE info_work
+							SET phone=%s
+							WHERE name=%s""",
+							(nameUser, id_user))
+		user.commit()
 		return redirect(url_for('indexer'))
 
 @app.route('/change', methods=["POST"])
@@ -308,11 +509,23 @@ def change():
 	__b_dateUser = "Mon" + " " + dictMounth[request.form.get("mounth")] + " " + request.form.get("day") + " " + request.form.get("year") + " " + "21:04:37"
 	__b_placeUser = request.form.get("ncity")
 	__passwordUser = hashlib.pbkdf2_hmac('sha256', request.form.get("pass").encode(), salt, 100000).hex()
-	user.updateElTable("data_login", "id_user="+str(__idUser), 
-						email=addKav(__mailUser), password=addKav(__passwordUser))
-	user.updateElTable("info_user", "id_user="+str(__idUser), 
-						name=addKav(__nameUser), home_place=addKav(__b_placeUser), 
-						b_date=addKav(__b_dateUser))
+
+	user = psycopg2.connect(database="main", user="db_creator", password="12345Q", host="localhost",port= 5432)
+	cursor = user.cursor()
+	cursor.execute("""UPDATE data_login
+						SET email=%s, password=%s
+						WHERE id_user = %s""",
+						(__mailUser, __passwordUser, __idUser))
+	user.commit()
+
+	user = psycopg2.connect(database="main", user="db_creator", password="12345Q", host="localhost",port= 5432)
+	cursor = user.cursor()
+	cursor.execute("""UPDATE info_user
+						SET name=%s, home_place=%s, b_date=%s
+						WHERE id_user = %s""",
+						(__nameUser, __b_placeUser, __b_dateUser, __idUser))
+	user.commit()
+
 	return redirect(url_for('indexer'))
 
 
