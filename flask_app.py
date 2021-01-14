@@ -41,9 +41,29 @@ def getTime():
 		
 
 @app.route('/')
-@app.route('/login')
+@app.route('/login', methods=["GET", "POST"])
 def login():
+	global __nameUser, __mailUser, __b_dateUser, __b_placeUser, __mailUser, __passwordUser
+	global __idUser, __total, __role, now, user, i_counter
+	user = psycopg2.connect(database="main", user="db_creator", password="12345Q", host="localhost",port= 5432)
+	cursor = user.cursor()
+	__nameUser = ""
+	__b_dateUser = ""
+	__b_placeUser= ""
+	__mailUser = ""
+	__passwordUser = ""
+	__role = ""
+	__idUser = 0
+	__total = 0
+	now = 0
+	curr_pg_user = 0
+	curr_pg_st = 0
+	i_counter = 1
 	return render_template('reg.html')
+
+@app.route('/exit', methods=["GET", "POST"])
+def exit():
+	return (redirect(url_for('login')))
 	
 @app.route('/validate', methods=["POST"])
 def validate():
@@ -62,23 +82,20 @@ def validate():
 		if  (len(answer) != 0):
 			__idUser = answer[0][2]
 
-			cursor.execute("""SELECT * 
-								FROM info_user 
-								WHERE id_user= %s""", 
+			cursor.execute("""SELECT info_user.name, info_user.home_place, info_user.b_date, info_user.role, bank_info.amount
+								FROM info_user
+								RIGHT JOIN bank_info ON (info_user.id_user = bank_info.id_user)
+								WHERE info_user.id_user = %s
+								ORDER BY info_user.id_user;""",
 								([__idUser]))
+			user.commit()
 			answer = cursor.fetchall()[0]
 
-			__nameUser = answer[1]
-			__b_placeUser= answer[2]
-			__b_dateUser = answer[3]
-			__role = answer[4]
-
-			cursor.execute("""SELECT * 
-								FROM bank_info WHERE id_user= %s""", 
-								([__idUser]))
-			answer = cursor.fetchall()[0]
-
-			__total = answer[2]
+			__nameUser = answer[0]
+			__b_placeUser= answer[1]
+			__b_dateUser = answer[2]
+			__role = answer[3]
+			__total = answer[4]
 			now = getTime()
 			mt = dictMounth[str(now.month)]
 			day = dictDay[str(now.weekday())]
@@ -100,6 +117,7 @@ def add():
 						FROM bank_info 
 						WHERE id_user= %s""", 
 						([__idUser]))
+	user.commit()
 	answer = cursor.fetchall()[0]
 
 	answer = cipher.decrypt(answer[0].encode('utf-8')).decode('utf-8')
@@ -109,6 +127,7 @@ def add():
 						FROM info_user RIGHT JOIN  info_work ON (info_user.name=info_work.name) 
 						WHERE info_user.id_user= %s""", 
 						([__idUser]))
+	user.commit()
 	answer = cursor.fetchall()[0] 
 	
 	phone = answer[2]
@@ -131,10 +150,6 @@ def up():
 						WHERE id_user= %s""", 
 						(__total ,__idUser))
 	user.commit()
-
-	user = psycopg2.connect(database="main", user="db_creator", password="12345Q", host="localhost",port=5432)
-	cursor = user.cursor()
-
 	cursor.execute("""DELETE FROM curr_service WHERE (curr_service IS NULL) AND (curr_time IS NULL)""")
 	user.commit()
 	return redirect(url_for('indexer'))
@@ -168,8 +183,9 @@ def account():
 							RIGHT JOIN info_work ON (info_work.name = info_user.name)
 							ORDER BY id_user
 							LIMIT 5
-							OFFSET %s
-						""", ([curr_pg_user]))
+							OFFSET %s""", 
+							([curr_pg_user]))
+		user.commit()
 		answer = cursor.fetchall()
 		for i in answer:
 			helpDict = {}
@@ -201,6 +217,7 @@ def edit(id_user):
 						RIGHT JOIN info_work ON (info_work.name = info_user.name)
 						WHERE data_login.id_user=%s""",
 						([id_user]))
+	user.commit()
 	answer = cursor.fetchall()[0]
 	helpDict = {}
 	helpDict["id_user"] = int(answer[0])
@@ -221,6 +238,7 @@ def order(ordID, ordName,ordCost):
 						FROM bank_info
 						WHERE id_user = %s""",
 						([__idUser]))
+	user.commit()
 	answer = cursor.fetchall()[0]
 	answer = cipher.decrypt(answer[0].encode('utf-8')).decode('utf-8')
 	cardNum = "**** **** **** "+ str(answer)[-4:]
@@ -229,7 +247,8 @@ def order(ordID, ordName,ordCost):
 						FROM info_user 
 						RIGHT JOIN info_work ON (info_user.name=info_work.name) 
 						WHERE info_user.id_user=%s""",
-						([__idUser]))  
+						([__idUser]))
+	user.commit()  
 	answer = cursor.fetchall()[0]
 	phone = answer[2]
 	return render_template("order.html", name=__nameUser, 
@@ -250,14 +269,10 @@ def pay(ordCost, ordName):
 						SET amount=%s
 						WHERE id_user=%s""",
 						(__total, __idUser))
-	user.commit()
-
 	now = getTime()
 	mt = dictMounth[str(now.month)]
 	day = dictDay[str(now.weekday())]
 
-	user = psycopg2.connect(database="main", user="db_creator", password="12345Q", host="localhost",port= 5432)
-	cursor = user.cursor()
 	cursor.execute("""UPDATE curr_service 
 						SET curr_service=%s,curr_time=%s
 						WHERE id_user=%s AND curr_service IS NULL AND curr_time IS NULL""",
@@ -276,7 +291,7 @@ def status():
 						WHERE id_user=%s
 						ORDER BY curr_time DESC""",
 						([__idUser]))
-
+	user.commit()
 	answer = cursor.fetchall()
 	for i in (i for i in answer):
 		helpDict = {}
@@ -302,6 +317,7 @@ def  done (idUser, ordName, ordDate):
 							RIGHT JOIN service ON (curr_service.curr_service = service.serv_name) 
 							WHERE id_user = %s AND curr_time LIKE %s AND curr_service LIKE %s""",
 							(idUser, ordDate, ordName))
+		user.commit()
 		answer = cursor.fetchall()[0]
 		plus = answer[2]
 
@@ -309,18 +325,12 @@ def  done (idUser, ordName, ordDate):
 							SET status=%s
 							WHERE id_user=%s AND curr_time LIKE %s AND curr_service LIKE %s""",
 							(True, idUser, ordDate,ordName))
-		user.commit()
 		__total += plus
-		user = psycopg2.connect(database="main", user="head", password="123456W", host="localhost",port=5432)
-		cursor = user.cursor()
 		cursor.execute("""UPDATE bank_info
 							SET amount=%s
 							WHERE id_user=%s""",
 							(__total, __idUser))
 		user.commit()
-
-		user = psycopg2.connect(database="main", user="head", password="123456W", host="localhost",port=5432)
-		cursor = user.cursor()
 		cursor.execute("""DELETE FROM curr_service
 							WHERE curr_service IS NULL AND curr_time IS NULL""")
 		user.commit()
@@ -339,6 +349,7 @@ def  canceler (idUser, ordName, ordDate):
 							RIGHT JOIN service ON (curr_service.curr_service = service.serv_name) 
 							WHERE id_user = %s AND curr_time LIKE %s AND curr_service LIKE %s""",
 							(idUser, ordDate, ordName))
+		user.commit()
 		answer = cursor.fetchall()[0]
 		minus = answer[2]
 
@@ -355,6 +366,7 @@ def  canceler (idUser, ordName, ordDate):
 							FROM bank_info
 							WHERE id_user=%s""",
 							([idUser]))
+		user.commit()
 		answer = cursor.fetchall()[0]
 	
 		summ = answer[2] + minus
@@ -363,7 +375,6 @@ def  canceler (idUser, ordName, ordDate):
 							SET amount=%s
 							WHERE id_user=%s""",
 							(summ, idUser))
-		user.commit()
 
 		cursor.execute("""DELETE FROM curr_service
 							WHERE curr_service IS NULL AND curr_time IS NULL""")
@@ -387,12 +398,10 @@ def  cancel(ordName, ordDate):
 							WHERE id_user=%s AND curr_time LIKE %s AND curr_service LIKE %s""",
 							(__idUser, ordDate, ordName))
 
-	user.commit()
 	cursor.execute("""UPDATE bank_info
 							SET amount=%s
 							WHERE id_user=%s""",
 							(__total, __idUser))
-	user.commit()
 
 	cursor.execute("""DELETE FROM curr_service
 							WHERE curr_service IS NULL AND curr_time IS NULL""")
@@ -431,10 +440,11 @@ def service():
 							RIGHT JOIN info_user ON (curr_service.id_user = info_user.id_user) 
 							RIGHT JOIN service ON (curr_service.curr_service = service.serv_name) 
 							WHERE curr_service.curr_service IS NOT NULL
-							ORDER BY curr_service.curr_time DESC
+							ORDER BY curr_service.status = false DESC, curr_service.curr_time
 							LIMIT 5
 							OFFSET %s""",
 							([curr_pg_st]))
+		user.commit()
 		answer = cursor.fetchall()
 		for i in (i for i in answer):	
 			helpDict = {}
@@ -455,6 +465,7 @@ def service():
 		cursor = user.cursor()
 		cursor.execute("""SELECT *
 							FROM service""")
+		user.commit()
 		answer = cursor.fetchall()
 		for i in (i for i in answer):
 			if __total >= int(i[2]):
@@ -483,17 +494,13 @@ def changeByAdmin(id_user):
 							WHERE id_user=%s""",
 							(mailUser, passwordUser, id_user))
 		user.commit()
-
 		user = psycopg2.connect(database="main", user="head", password="123456W", host="localhost",port=5432)
-		cursor = user.cursor()
 		cursor.execute("""UPDATE info_user
 							SET name=%s
 							WHERE id_user=%s""",
 							(nameUser, id_user))
 		user.commit()
-
 		user = psycopg2.connect(database="main", user="head", password="123456W", host="localhost",port=5432)
-		cursor = user.cursor()
 		cursor.execute("""UPDATE info_work
 							SET phone=%s
 							WHERE name=%s""",
@@ -516,10 +523,7 @@ def change():
 						SET email=%s, password=%s
 						WHERE id_user = %s""",
 						(__mailUser, __passwordUser, __idUser))
-	user.commit()
 
-	user = psycopg2.connect(database="main", user="db_creator", password="12345Q", host="localhost",port= 5432)
-	cursor = user.cursor()
 	cursor.execute("""UPDATE info_user
 						SET name=%s, home_place=%s, b_date=%s
 						WHERE id_user = %s""",
