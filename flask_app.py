@@ -523,7 +523,6 @@ def change():
 						SET email=%s, password=%s
 						WHERE id_user = %s""",
 						(__mailUser, __passwordUser, __idUser))
-
 	cursor.execute("""UPDATE info_user
 						SET name=%s, home_place=%s, b_date=%s
 						WHERE id_user = %s""",
